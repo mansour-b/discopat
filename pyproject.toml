@@ -2,12 +2,12 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-[tools.setuptools]
+[tool.setuptools]
 packages = ["patrick"]
 
 [project]
 name = "pattern-discovery-kit"
-version = "0.2.0"
+version = "0.2.1"
 readme = "README.rst"
 description = "Pattern Discovery Kit"
 license = {file = "LICENSE"}

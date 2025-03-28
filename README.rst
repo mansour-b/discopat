@@ -1,3 +1,6 @@
+.. image:: assets/patrick_hollywood.png
+   :align: center
+
 PATteRn dIsCovery Kit (PATRICK)
 -------------------------------
 
