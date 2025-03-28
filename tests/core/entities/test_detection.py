@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
-from typing_extensions import Self
-
-from patrick.core import (
+from patryk.core import (
     Annotation,
     Array,
     Box,
@@ -13,10 +11,10 @@ from patrick.core import (
     NeuralNet,
     NNModel,
 )
+from typing_extensions import Self
 
 
 class TestModel:
-
     @staticmethod
     def make_model():
         class DumbModel(Model):
@@ -45,7 +43,6 @@ class TestModel:
 
 
 class TestNeuralNet:
-
     @staticmethod
     def make_net():
         class DumbNN(NeuralNet):
@@ -70,7 +67,6 @@ class TestNNModel:
                 return input_array
 
         class DumbNNModel(NNModel):
-
             def pre_process(self, frame: Frame) -> Array:
                 return frame.image_array
 

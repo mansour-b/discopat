@@ -1,15 +1,14 @@
-from patrick.core import DataSource
-from patrick.repositories.local import (
+from patryk.core import DataSource
+from patryk.repositories.local import (
     LocalFrameRepository,
     LocalMovieRepository,
     LocalNNModelRepository,
 )
-from patrick.repositories.osf import OSFMovieRepository, OSFNNModelRepository
-from patrick.repositories.repository import Repository
+from patryk.repositories.osf import OSFMovieRepository, OSFNNModelRepository
+from patryk.repositories.repository import Repository
 
 
 def repository_factory(data_source: DataSource, name: str) -> Repository:
-
     repo_class_dict = {
         "local": {
             "input_frames": LocalFrameRepository,

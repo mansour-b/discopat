@@ -10,8 +10,7 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 
 if TYPE_CHECKING:
     from matplotlib.axes._axes import Axes
-
-    from patrick.core import Annotation, Box, Frame, Keypoint
+    from patryk.core import Annotation, Box, Frame, Keypoint
 
 
 def make_movie(

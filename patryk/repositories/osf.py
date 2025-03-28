@@ -8,14 +8,13 @@ from typing import Any
 import numpy as np
 import yaml
 from osfclient import OSF
+from patryk.core import Frame, Movie
+from patryk.repositories.repository import Repository
 
-from patrick.core import Frame, Movie
-from patrick.repositories.repository import Repository
-
-PATRICK_OSF_PROJECT_ID = "jtp4z"
+PATRYK_OSF_PROJECT_ID = "jtp4z"
 
 osf = OSF()
-project = osf.project(PATRICK_OSF_PROJECT_ID)
+project = osf.project(PATRYK_OSF_PROJECT_ID)
 storage = project.storage("osfstorage")
 
 STORAGE_DICT = {file.path[1:]: file for file in storage.files}
@@ -73,7 +72,6 @@ class OSFNNModelRepository(OSFRepository):
 
 
 class OSFMovieRepository(OSFRepository):
-
     def __init__(self, name: str):
         self.name = name
 

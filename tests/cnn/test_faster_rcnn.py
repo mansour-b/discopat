@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 import torch
-
-from patrick.cnn.faster_rcnn import FasterRCNNModel
-from patrick.core import Box, Frame
+from patryk.cnn.faster_rcnn import FasterRCNNModel
+from patryk.core import Box, Frame
 
 
 class MockNet:

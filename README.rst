@@ -1,4 +1,4 @@
-PATteRn dIsCovery Kit (PATRICK)
+PATtern discoveRY Kit (PATRYK)
 -------------------------------
 
 |Build Status| |Code Coverage|
@@ -16,10 +16,10 @@ in physical signals. These signals can be of various forms:
 Installation
 ------------
 
-You can install ``patrick`` from the source code by doing the following::
+You can install ``patryk`` from the source code by doing the following::
 
-    git clone https://github.com/mansour-b/patrick.git
-    cd patrick
+    git clone https://github.com/mansour-b/patryk.git
+    cd patryk
     pip install .
 
 Quickstart
@@ -31,8 +31,8 @@ Here is an example to briefly present the API:
 
     import numpy as np
 
-    from patrick.core import Box, Frame, Model, Movie, Tracker
-    from patrick.display import plot_frame
+    from patryk.core import Box, Frame, Model, Movie, Tracker
+    from patryk.display import plot_frame
 
     # Define the dimensions of the problem
     frame_width = 5
@@ -82,8 +82,8 @@ Here is an example to briefly present the API:
     # TBD: make a GIF to show the tracks
     export_to_gif(analysed_movie, fps=gif_frames_per_seconds)
 
-.. |Build Status| image:: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml/badge.svg
-   :target: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml
+.. |Build Status| image:: https://github.com/mansour-b/patryk/actions/workflows/pytest.yaml/badge.svg
+   :target: https://github.com/mansour-b/patryk/actions/workflows/pytest.yaml
 
-.. |Code Coverage| image:: https://codecov.io/github/mansour-b/patrick/graph/badge.svg?token=E37XYKWFWT
-   :target: https://codecov.io/github/mansour-b/patrick
+.. |Code Coverage| image:: https://codecov.io/github/mansour-b/patryk/graph/badge.svg?token=E37XYKWFWT
+   :target: https://codecov.io/github/mansour-b/patryk
