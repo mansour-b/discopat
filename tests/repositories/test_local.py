@@ -1,6 +1,6 @@
 import pytest
 from patryk.repositories.local import (
-    PATRICK_DIR_PATH,
+    PATRYK_DIR_PATH,
     LocalFrameRepository,
     LocalMovieRepository,
 )
@@ -10,7 +10,7 @@ class TestLocalFrameRepository:
     def test_init(self):
         repo = LocalFrameRepository("input_frames")
         assert repo.name == "input_frames"
-        assert repo._directory_path == PATRICK_DIR_PATH / "input"
+        assert repo._directory_path == PATRYK_DIR_PATH / "input"
         with pytest.raises(KeyError):
             LocalFrameRepository("input")
 
@@ -27,7 +27,7 @@ class TestLocalMovieRepository:
     def test_init(self):
         repo = LocalMovieRepository("input_movies")
         assert repo.name == "input_movies"
-        assert repo._directory_path == PATRICK_DIR_PATH / "input"
+        assert repo._directory_path == PATRYK_DIR_PATH / "input"
         with pytest.raises(KeyError):
             LocalMovieRepository("input")
 

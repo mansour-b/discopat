@@ -1,4 +1,4 @@
-PATteRn dIsCovery Kit (PATRICK)
+PATteRn dIsCovery Kit (PATRYK)
 -------------------------------
 
 |Build Status| |Code Coverage|
