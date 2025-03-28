@@ -23,6 +23,10 @@ You can install the ``pattern-discovery-kit`` from the source code by doing the 
 
     pip install pattern-discovery-kit
 
+You can then try running `this notebook
+<https://github.com/mansour-b/pattern-discovery-kit/blob/main/examples/model_inference.ipynb>`_
+on your computer to verify that the installation was succesful.
+
 Quickstart
 ----------
 
