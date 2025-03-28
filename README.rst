@@ -19,11 +19,9 @@ in physical signals. These signals can be of various forms:
 Installation
 ------------
 
-You can install ``patrick`` from the source code by doing the following::
+You can install the ``pattern-discovery-kit`` from the source code by doing the following::
 
-    git clone https://github.com/mansour-b/patrick.git
-    cd patrick
-    pip install .
+    pip install pattern-discovery-kit
 
 Quickstart
 ----------
