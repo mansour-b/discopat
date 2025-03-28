@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
+from patryk.core.entities.metadata import Metadata
 from typing_extensions import Self
-
-from patrick.core.entities.metadata import Metadata
 
 
 class Annotation(Metadata):

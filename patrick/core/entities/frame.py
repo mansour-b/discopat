@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from patryk.core.entities.annotation import Annotation, annotation_dict_factory
+from patryk.core.entities.metadata import Metadata
 from typing_extensions import Self
 
-from patrick.core.entities.annotation import Annotation, annotation_dict_factory
-from patrick.core.entities.metadata import Metadata
-
 if TYPE_CHECKING:
-    from patrick.core.entities.array import Array
+    from patryk.core.entities.array import Array
 
 
 class Frame(Metadata):

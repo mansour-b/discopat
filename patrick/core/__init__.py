@@ -1,9 +1,9 @@
-from patrick.core.entities.annotation import Annotation, Box, Keypoint, Track
-from patrick.core.entities.array import Array
-from patrick.core.entities.detection import CDModel, Model, NeuralNet, NNModel
-from patrick.core.entities.frame import Frame
-from patrick.core.entities.movie import Movie
-from patrick.core.value_objects import ComputingDevice, DataSource, Framework
+from patryk.core.entities.annotation import Annotation, Box, Keypoint, Track
+from patryk.core.entities.array import Array
+from patryk.core.entities.detection import CDModel, Model, NeuralNet, NNModel
+from patryk.core.entities.frame import Frame
+from patryk.core.entities.movie import Movie
+from patryk.core.value_objects import ComputingDevice, DataSource, Framework
 
 __all__ = [
     "Annotation",

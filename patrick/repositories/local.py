@@ -6,9 +6,8 @@ from pathlib import Path
 
 import numpy as np
 import yaml
-
-from patrick.core import Frame, Movie, NNModel
-from patrick.repositories.repository import Repository
+from patryk.core import Frame, Movie, NNModel
+from patryk.repositories.repository import Repository
 
 DATA_DIR_PATH = Path.home() / "data"
 PATRICK_DIR_PATH = DATA_DIR_PATH / "pattern_discovery"
@@ -24,7 +23,6 @@ class LocalRepository(Repository):
 
 
 class LocalFrameRepository(LocalRepository):
-
     def __init__(self, name: str):
         self.name = name
         self._directory_path = {
@@ -82,7 +80,6 @@ class LocalFrameRepository(LocalRepository):
 
 class LocalNNModelRepository(LocalRepository):
     def read(self, content_path: str or Path) -> dict[str, dict or BytesIO]:
-
         return {
             "label_map": self._load_label_map(content_path),
             "model_parameters": self._load_model_parameters(content_path),
@@ -115,7 +112,6 @@ class LocalNNModelRepository(LocalRepository):
 
 
 class LocalMovieRepository(LocalRepository):
-
     def __init__(self, name: str):
         self.name = name
         self._directory_path = {
