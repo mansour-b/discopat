@@ -3,11 +3,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from patryk.core.entities.annotation import Annotation
-from patryk.core.entities.array import Array
-from patryk.core.entities.frame import Frame
-from patryk.core.value_objects import ComputingDevice
 from typing_extensions import Self
+
+from patrick.core.entities.annotation import Annotation
+from patrick.core.entities.array import Array
+from patrick.core.entities.frame import Frame
+from patrick.core.value_objects import ComputingDevice
 
 
 class Model(ABC):
@@ -116,7 +117,7 @@ class NNModel(Model):
 
     @abstractmethod
     def post_process(self, net_predictions: Any) -> list[Annotation]:
-        """Convert the net's predictions into patryk's "Annotation" format."""
+        """Convert the net's predictions into patrick's "Annotation" format."""
 
     @abstractmethod
     def set_device(self, device: ComputingDevice) -> None:
