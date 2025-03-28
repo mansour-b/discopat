@@ -1,10 +1,10 @@
+.. image:: assets/patrick_hollywood.png
+   :align: center
+
 PATteRn dIsCovery Kit (PATRICK)
 -------------------------------
 
 |Build Status| |Code Coverage|
-
-.. image:: assets/patrick_hollywood.png
-   :align: center
 
 Welcome to the Pattern Discovery Kit!
 
