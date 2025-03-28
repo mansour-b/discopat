@@ -2,17 +2,23 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[tools.setuptools]
+packages = ["patrick"]
+
 [project]
-name = "patrick"
-version = "0.1.0"
+name = "pattern-discovery-kit"
+version = "0.2.0"
+readme = "README.rst"
+description = "Pattern Discovery Kit"
 
-
-requires-python = ">=3.8"
 authors = [
   {name = "Mansour Benbakoura", email = "mansour.benbakoura@inria.fr"}
 ]
-description = "Pattern Discovery Kit"
-readme = "README.md"
+
+license = "BSD-3-Clause"
+license-files = ["LICEN[CS]E*"]
+
+requires-python = ">=3.8"
 
 dependencies = [
   "imageio",
