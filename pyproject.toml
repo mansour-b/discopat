@@ -47,6 +47,9 @@ test = [
   "pytest-cov",
 ]
 
+[project.urls]
+Repository = "https://github.com/mansour-b/pattern-discovery-kit"
+
 [tool.ruff]
 exclude = [
   ".bzr",
