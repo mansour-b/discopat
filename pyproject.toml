@@ -7,7 +7,7 @@ packages = ["patrick"]
 
 [project]
 name = "pattern-discovery-kit"
-version = "0.2.2"
+version = "0.2.3"
 readme = "README.rst"
 description = "Pattern Discovery Kit"
 license = {file = "LICENSE"}
