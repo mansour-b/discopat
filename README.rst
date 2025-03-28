@@ -1,4 +1,4 @@
-.. image:: assets/patrick_hollywood.png
+.. image:: https://github.com/mansour-b/pattern-discovery-kit/blob/main/assets/patrick_hollywood.png
    :align: center
 
 PATteRn dIsCovery Kit (PATRICK)
