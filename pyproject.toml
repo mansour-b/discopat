@@ -2,17 +2,20 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[tools.setuptools]
+packages = ["patrick"]
+
 [project]
-name = "patryk"
-version = "0.1.0"
-
-
-requires-python = ">=3.8"
+name = "pattern-discovery-kit"
+version = "0.2.0"
+readme = "README.rst"
+description = "Pattern Discovery Kit"
+license = {file = "LICENSE"}
 authors = [
   {name = "Mansour Benbakoura", email = "mansour.benbakoura@inria.fr"}
 ]
-description = "Pattern Discovery Kit"
-readme = "README.md"
+
+requires-python = ">=3.8"
 
 dependencies = [
   "imageio",
@@ -28,7 +31,6 @@ dependencies = [
   "tqdm",
 ]
 
-
 [project.optional-dependencies]
 dev = [
   "ruff",
@@ -40,6 +42,9 @@ test = [
   "pytest",
   "pytest-cov",
 ]
+
+[project.urls]
+Repository = "https://github.com/mansour-b/pattern-discovery-kit"
 
 [tool.ruff]
 exclude = [

@@ -1,4 +1,4 @@
-from patryk.core import Box, Frame, Movie, Track
+from patrick.core import Box, Frame, Movie, Track
 
 
 class TestMovie:
@@ -12,9 +12,7 @@ class TestMovie:
                     width=512,
                     height=512,
                     annotations=[
-                        Box(
-                            label="blob", x=0, y=0, width=1, height=1, score=1.0
-                        )
+                        Box(label="blob", x=0, y=0, width=1, height=1, score=1.0)
                     ],
                 ),
             ],

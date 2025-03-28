@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
-from patryk.core import DataSource
+from patrick.core import DataSource
 
 
 class Repository(ABC):

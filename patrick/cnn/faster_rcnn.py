@@ -5,11 +5,12 @@ from typing import Any
 
 import numpy as np
 import torch
-from patryk.core import Box, ComputingDevice, Frame, NeuralNet, NNModel
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 from typing_extensions import Self
+
+from patrick.core import Box, ComputingDevice, Frame, NeuralNet, NNModel
 
 
 class FasterRCNNModel(NNModel):
@@ -110,6 +111,7 @@ class FasterRCNNModel(NNModel):
 
 
 class TorchNetBuilder:
+
     def build(self, model_as_dict: dict[str, str or BytesIO]) -> NeuralNet:
         weights = torch.load(
             model_as_dict["raw_net"], weights_only=True, map_location="cpu"

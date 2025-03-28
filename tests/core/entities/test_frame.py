@@ -1,4 +1,4 @@
-from patryk.core import Box, Frame, Keypoint
+from patrick.core import Box, Frame, Keypoint
 
 
 class TestFrame:
@@ -39,9 +39,7 @@ class TestFrame:
             name="frame_0",
             width=512,
             height=512,
-            annotations=[
-                Box(label="blob", x=0, y=0, width=1, height=1, score=1)
-            ],
+            annotations=[Box(label="blob", x=0, y=0, width=1, height=1, score=1)],
         )
         assert frame.to_dict() == {
             "name": "frame_0",
