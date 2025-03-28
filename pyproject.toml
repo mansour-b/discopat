@@ -10,13 +10,10 @@ name = "pattern-discovery-kit"
 version = "0.2.0"
 readme = "README.rst"
 description = "Pattern Discovery Kit"
-
+license = {file = "LICENSE"}
 authors = [
   {name = "Mansour Benbakoura", email = "mansour.benbakoura@inria.fr"}
 ]
-
-license = "BSD-3-Clause"
-license-files = ["LICEN[CS]E*"]
 
 requires-python = ">=3.8"
 
@@ -33,7 +30,6 @@ dependencies = [
   "torchvision",
   "tqdm",
 ]
-
 
 [project.optional-dependencies]
 dev = [
