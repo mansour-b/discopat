@@ -1,10 +1,9 @@
-import os
 import subprocess
 import sys
 from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
-sys.path.insert(0, Path("../..").resolve())
+sys.path.insert(0, Path("../patrick").resolve())
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -16,9 +15,9 @@ release = "0.2.3"
 
 # -- General configuration ---------------------------------------------------
 extensions = [
-    "sphinx.ext.autodoc",  # Pulls docstrings
-    "sphinx.ext.autosummary",  # Generates summaries
-    "sphinx.ext.napoleon",  # Supports Google/Numpy docstrings
+    "sphinx.ext.autodoc",  # Pull docstrings
+    "sphinx.ext.autosummary",  # Generate summaries
+    "sphinx.ext.napoleon",  # Support Google/Numpy docstrings
     "sphinx.ext.viewcode",  # Links to source code,
     "sphinx_rtd_theme",
 ]
@@ -43,9 +42,9 @@ html_theme = "sphinx_rtd_theme"
 
 # -- Auto-generate API docs --------------------------------------------------
 def run_apidoc(_):
-    """Run sphinx-apidoc to auto-generate .rst files"""
-    module_path = os.path.abspath("../../my_package")  # Adjust path
-    output_path = os.path.abspath("./source")
+    """Run sphinx-apidoc to auto-generate .rst files."""
+    module_path = Path("../patrick").resolve()
+    output_path = Path("./source").resolve()
     subprocess.run(
         ["sphinx-apidoc", "-o", output_path, module_path, "--force"], check=True
     )
