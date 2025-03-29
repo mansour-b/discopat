@@ -70,6 +70,16 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/_static/
+docs/_autosummary/
+
+# Ignore sphinx-apidoc auto-generated files (optional)
+docs/source/modules.rst
+
+# Ignore editor/OS-specific files
+*.swp
+*.swo
+.DS_Store
 
 # PyBuilder
 .pybuilder/
