@@ -3,8 +3,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import sphinx_rtd_theme
-
 # -- Path setup --------------------------------------------------------------
 sys.path.insert(0, Path("../..").resolve())
 
