@@ -19,7 +19,8 @@ extensions = [
     "sphinx.ext.autodoc",  # Pulls docstrings
     "sphinx.ext.autosummary",  # Generates summaries
     "sphinx.ext.napoleon",  # Supports Google/Numpy docstrings
-    "sphinx.ext.viewcode",  # Links to source code
+    "sphinx.ext.viewcode",  # Links to source code,
+    "sphinx_rtd_theme",
 ]
 
 autosummary_generate = True  # Automatically generate summaries
