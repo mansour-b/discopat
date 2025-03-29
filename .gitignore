@@ -73,8 +73,8 @@ docs/_build/
 docs/_static/
 docs/_autosummary/
 
-# Ignore sphinx-apidoc auto-generated files (optional)
-docs/source/modules.rst
+# Ignore sphinx-apidoc auto-generated files
+docs/patrick*.rst
 
 # Ignore editor/OS-specific files
 *.swp
