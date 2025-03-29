@@ -74,6 +74,7 @@ docs/_static/
 docs/_autosummary/
 
 # Ignore sphinx-apidoc auto-generated files
+docs/source/modules.rst
 docs/patrick*.rst
 
 # Ignore editor/OS-specific files

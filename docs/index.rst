@@ -12,6 +12,14 @@ Documentation of the ``patrick`` package.
    :maxdepth: 2
    :caption: Contents:
 
+.. toctree::
+   :recursive:
+   :caption: Documentation
+
+   modules
+
 .. autosummary::
    :toctree:
    :recursive:
+
+   patrick
