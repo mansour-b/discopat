@@ -22,7 +22,7 @@ frame = Frame(
     width=512,
     height=512,
     annotations=[],
-    image_array=np.random.rand(),
+    image_array=np.random.rand(512, 512),
 )
 
 plot_frame(frame)
