@@ -4,11 +4,11 @@
 # Required
 version: 2
 
-# Set the OS, Python version, and other tools you might need
+# Explicitly set the OS and Python versions
 build:
-  os: ubuntu-lts-latest
+  os: "ubuntu-24.04"
   tools:
-    python: "3"
+    python: "3.12"
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
