@@ -1,10 +1,12 @@
-#!/usr/bin/env python
-# coding: utf-8
+"""
+Model Inference
+===============
 
+This example demonstrates how to detect structures with a CNN using ``patrick``.
+"""
 # ### Imports
 
 # In[1]:
-
 
 from tqdm import tqdm
 
@@ -12,7 +14,6 @@ from patrick.cnn import FasterRCNNModel
 from patrick.core import Movie
 from patrick.display import plot_frame
 from patrick.repositories import repository_factory
-
 
 # ### Definitions
 
@@ -67,4 +68,3 @@ analysed_movie = Movie(name=movie.name, frames=analysed_frames, tracks=[])
 
 for frame in analysed_movie.frames:
     plot_frame(frame)
-
