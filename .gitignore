@@ -74,8 +74,10 @@ docs/_static/
 docs/_autosummary/
 
 # Ignore sphinx-apidoc auto-generated files
-docs/source/*.rst
+docs/auto_examples/*
 docs/patrick*.rst
+docs/sg_execution_times.rst
+docs/source/*.rst
 
 # Ignore editor/OS-specific files
 *.swp
