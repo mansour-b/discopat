@@ -29,3 +29,9 @@ jobs:
         run: |
           cd docs
           make html
+      - name: Upload artifacts
+        if: always()
+        use: actions/upload-artifact@v4
+        with:
+          name: DocHTML
+          path: docs
