@@ -6,16 +6,8 @@ from pathlib import Path
 # -- Path setup --------------------------------------------------------------
 on_rtd = os.environ.get("READTHEDOCS") == "True"
 
-print()
-print(80 * "=")
-print()
-print("ON RTD", on_rtd)
-print()
-print(80 * "=")
-print()
-
-if on_rtd:
-    sys.path.insert(0, os.path.abspath(".."))  # or '../src' if using src layout
+# if on_rtd:
+#     sys.path.insert(0, os.path.abspath(".."))  # or '../src' if using src layout
 
 
 # -- Project information -----------------------------------------------------
@@ -40,8 +32,9 @@ sphinx_gallery_conf = {
     "examples_dirs": "../examples",  # path to example scripts
     "gallery_dirs": "auto_examples",  # path where to save generated output
     "filename_pattern": r"plot_",  # include only files starting with plot_
-    "reset_modules": ("sphinxext.add_package_to_path",),
 }
+if on_rtd:
+    sphinx_gallery_conf["reset_modules"] = (("sphinxext.add_package_to_path",),)
 
 
 autosummary_generate = True  # Automatically generate summaries
