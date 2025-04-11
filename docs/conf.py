@@ -34,7 +34,7 @@ sphinx_gallery_conf = {
     "filename_pattern": r"plot_",  # include only files starting with plot_
 }
 if on_rtd:
-    sphinx_gallery_conf["reset_modules"] = (("sphinxext.add_package_to_path",),)
+    sphinx_gallery_conf["reset_modules"] = ("sphinxext.add_package_to_path",)
 
 
 autosummary_generate = True  # Automatically generate summaries
