@@ -21,6 +21,5 @@ python:
   install:
     - method: pip
       path: .
-      editable: true
       extra_requirements:
         - doc  # Ensures Sphinx and other doc dependencies are installed
