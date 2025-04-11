@@ -57,7 +57,7 @@ html_theme = "sphinx_rtd_theme"
 # -- Auto-generate API docs --------------------------------------------------
 def run_apidoc(_):
     """Run sphinx-apidoc to auto-generate .rst files."""
-    module_path = Path("../patrick").resolve()
+    module_path = Path("../discopat").resolve()
     output_path = Path("./source").resolve()
     subprocess.run(
         ["sphinx-apidoc", "-o", output_path, module_path, "--force"], check=True

@@ -1,3 +1,3 @@
-from patrick.cnn.faster_rcnn import FasterRCNNModel
+from discopat.cnn.faster_rcnn import FasterRCNNModel
 
 __all__ = ["FasterRCNNModel"]

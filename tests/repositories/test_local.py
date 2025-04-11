@@ -1,6 +1,5 @@
 import pytest
-
-from patrick.repositories.local import (
+from discopat.repositories.local import (
     PATRICK_DIR_PATH,
     LocalFrameRepository,
     LocalMovieRepository,
@@ -8,7 +7,6 @@ from patrick.repositories.local import (
 
 
 class TestLocalFrameRepository:
-
     def test_init(self):
         repo = LocalFrameRepository("input_frames")
         assert repo.name == "input_frames"
@@ -26,7 +24,6 @@ class TestLocalFrameRepository:
 
 
 class TestLocalMovieRepository:
-
     def test_init(self):
         repo = LocalMovieRepository("input_movies")
         assert repo.name == "input_movies"

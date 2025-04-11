@@ -75,7 +75,7 @@ docs/_autosummary/
 
 # Ignore sphinx-apidoc auto-generated files
 docs/auto_examples/*
-docs/patrick*.rst
+docs/discopat*.rst
 docs/sg_execution_times.rst
 docs/source/*.rst
 

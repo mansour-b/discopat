@@ -6,7 +6,7 @@
 Pattern Discovery Kit documentation
 ===================================
 
-Documentation of the ``patrick`` package.
+Documentation of the ``discopat`` package.
 
 .. toctree::
    :maxdepth: 2
@@ -17,7 +17,7 @@ Documentation of the ``patrick`` package.
    :recursive:
    :caption: Documentation
 
-   patrick
+   discopat
 
 .. toctree::
    :maxdepth: 2

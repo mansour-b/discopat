@@ -3,12 +3,11 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
+from discopat.core.entities.annotation import Annotation
+from discopat.core.entities.array import Array
+from discopat.core.entities.frame import Frame
+from discopat.core.value_objects import ComputingDevice
 from typing_extensions import Self
-
-from patrick.core.entities.annotation import Annotation
-from patrick.core.entities.array import Array
-from patrick.core.entities.frame import Frame
-from patrick.core.value_objects import ComputingDevice
 
 
 class Model(ABC):
@@ -117,7 +116,7 @@ class NNModel(Model):
 
     @abstractmethod
     def post_process(self, net_predictions: Any) -> list[Annotation]:
-        """Convert the net's predictions into patrick's "Annotation" format."""
+        """Convert the net's predictions into discopat's "Annotation" format."""
 
     @abstractmethod
     def set_device(self, device: ComputingDevice) -> None:

@@ -2,18 +2,18 @@
 Model Inference
 ===============
 
-This example demonstrates how to detect structures with a CNN using ``patrick``.
+This example demonstrates how to detect structures with a CNN using ``discopat``.
 """
+
+from discopat.cnn import FasterRCNNModel
+from discopat.core import Movie
+from discopat.display import plot_frame
+from discopat.repositories import repository_factory
 
 # %%
 # Imports
 # -------
 from tqdm import tqdm
-
-from patrick.cnn import FasterRCNNModel
-from patrick.core import Movie
-from patrick.display import plot_frame
-from patrick.repositories import repository_factory
 
 # %%
 # Definitions
