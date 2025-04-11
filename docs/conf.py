@@ -4,11 +4,15 @@ import sys
 from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
-# root_path = Path("..").resolve()
-# sys.path.insert(0, root_path)
-
-
 on_rtd = os.environ.get("READTHEDOCS") == "True"
+
+print()
+print(80 * "=")
+print()
+print("ON RTD", on_rtd)
+print()
+print(80 * "=")
+print()
 
 if on_rtd:
     sys.path.insert(0, os.path.abspath(".."))  # or '../src' if using src layout
@@ -36,13 +40,8 @@ sphinx_gallery_conf = {
     "examples_dirs": "../examples",  # path to example scripts
     "gallery_dirs": "auto_examples",  # path where to save generated output
     "filename_pattern": r"plot_",  # include only files starting with plot_
+    "reset_modules": ("sphinxext.add_package_to_path",),
 }
-
-if on_rtd:
-    sphinx_gallery_conf["exec_code"] = [
-        "import os, sys",
-        "sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))",
-    ]
 
 
 autosummary_generate = True  # Automatically generate summaries
