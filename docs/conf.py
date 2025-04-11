@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
-sys.path.insert(0, Path("../patrick").resolve())
+sys.path.insert(0, Path("..").resolve())
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
