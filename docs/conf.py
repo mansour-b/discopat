@@ -1,19 +1,17 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
-root_path = Path("..").resolve()
-print(f"Adding to sys.path: {root_path}")
-print(f"Contents: {list(root_path.glob('*'))}")
-sys.path.insert(0, root_path)
+# root_path = Path("..").resolve()
+# sys.path.insert(0, root_path)
 
-try:
-    import patrick
 
-    print("Successfully imported my_package")
-except Exception as e:
-    print("Failed to import my_package:", e)
+on_rtd = os.environ.get("READTHEDOCS") == "True"
+
+if on_rtd:
+    sys.path.insert(0, os.path.abspath(".."))  # or '../src' if using src layout
 
 
 # -- Project information -----------------------------------------------------
@@ -39,6 +37,13 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",  # path where to save generated output
     "filename_pattern": r"plot_",  # include only files starting with plot_
 }
+
+if on_rtd:
+    sphinx_gallery_conf["exec_code"] = [
+        "import os, sys",
+        "sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))",
+    ]
+
 
 autosummary_generate = True  # Automatically generate summaries
 
