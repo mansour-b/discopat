@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from patrick import Movie, Track
+from patrick.core import Movie, Track
 
 
 class Tracker(ABC):

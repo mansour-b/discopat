@@ -1,9 +1,13 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
-sys.path.insert(0, Path("../patrick").resolve())
+on_rtd = os.environ.get("READTHEDOCS") == "True"
+if on_rtd:
+    sys.path.insert(0, os.path.abspath(".."))
+
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -20,7 +24,17 @@ extensions = [
     "sphinx.ext.napoleon",  # Support Google/Numpy docstrings
     "sphinx.ext.viewcode",  # Links to source code,
     "sphinx_rtd_theme",
+    "sphinx_gallery.gen_gallery",
 ]
+
+sphinx_gallery_conf = {
+    "examples_dirs": "../examples",  # path to example scripts
+    "gallery_dirs": "auto_examples",  # path where to save generated output
+    "filename_pattern": r"plot_",  # include only files starting with plot_
+}
+if on_rtd:
+    sphinx_gallery_conf["reset_modules"] = ("sphinxext.add_package_to_path",)
+
 
 autosummary_generate = True  # Automatically generate summaries
 
