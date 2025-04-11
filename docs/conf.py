@@ -12,7 +12,7 @@ if on_rtd:
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Pattern Discovery Kit"
+project = "DISCOver PATterns (DISCOPAT)"
 copyright = "2025, Mansour Benbakoura"
 author = "Mansour Benbakoura"
 release = "0.2.3"

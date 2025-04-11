@@ -1,12 +1,12 @@
 .. image:: https://raw.githubusercontent.com/mansour-b/discopat/main/assets/discopat_hollywood.png
    :align: center
 
-PATteRn dIsCovery Kit (DISCOPAT)
---------------------------------
+DISCOver PATterns (DISCOPAT)
+----------------------------
 
 |Build Status| |Code Coverage|
 
-Welcome to the Pattern Discovery Kit!
+Welcome to ``discopat``, the pattern discovery library!
 
 This library provides tools to discover, detect, and track meaningful patterns
 in physical signals. These signals can be of various forms:
