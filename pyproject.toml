@@ -3,13 +3,13 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["patrick"]
+packages = ["discopat"]
 
 [project]
-name = "pattern-discovery-kit"
+name = "discopat"
 version = "0.2.3"
 readme = "README.rst"
-description = "Pattern Discovery Kit"
+description = "DISCOver PATterns (DISCOPAT)"
 license = {file = "LICENSE"}
 authors = [
   {name = "Mansour Benbakoura", email = "mansour.benbakoura@inria.fr"}
@@ -46,7 +46,7 @@ test = [
 ]
 
 [project.urls]
-Repository = "https://github.com/mansour-b/pattern-discovery-kit"
+Repository = "https://github.com/mansour-b/discopat"
 
 [tool.ruff]
 exclude = [

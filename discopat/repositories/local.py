@@ -6,12 +6,11 @@ from pathlib import Path
 
 import numpy as np
 import yaml
-
-from patrick.core import Frame, Movie, NNModel
-from patrick.repositories.repository import Repository
+from discopat.core import Frame, Movie, NNModel
+from discopat.repositories.repository import Repository
 
 DATA_DIR_PATH = Path.home() / "data"
-PATRICK_DIR_PATH = DATA_DIR_PATH / "pattern_discovery"
+DISCOPATH = DATA_DIR_PATH / "pattern_discovery"
 
 
 class LocalRepository(Repository):
@@ -19,17 +18,16 @@ class LocalRepository(Repository):
 
     def __init__(self, name: str):
         super().__init__(name)
-        self._directory_path = PATRICK_DIR_PATH / self.name
+        self._directory_path = DISCOPATH / self.name
         self._directory_path.mkdir(parents=True, exist_ok=True)
 
 
 class LocalFrameRepository(LocalRepository):
-
     def __init__(self, name: str):
         self.name = name
         self._directory_path = {
-            "input_frames": PATRICK_DIR_PATH / "input",
-            "output_frames": PATRICK_DIR_PATH / "output",
+            "input_frames": DISCOPATH / "input",
+            "output_frames": DISCOPATH / "output",
         }[name]
 
     def read(self, content_path: str or Path) -> Frame:
@@ -82,7 +80,6 @@ class LocalFrameRepository(LocalRepository):
 
 class LocalNNModelRepository(LocalRepository):
     def read(self, content_path: str or Path) -> dict[str, dict or BytesIO]:
-
         return {
             "label_map": self._load_label_map(content_path),
             "model_parameters": self._load_model_parameters(content_path),
@@ -115,12 +112,11 @@ class LocalNNModelRepository(LocalRepository):
 
 
 class LocalMovieRepository(LocalRepository):
-
     def __init__(self, name: str):
         self.name = name
         self._directory_path = {
-            "input_movies": PATRICK_DIR_PATH / "input",
-            "output_movies": PATRICK_DIR_PATH / "output",
+            "input_movies": DISCOPATH / "input",
+            "output_movies": DISCOPATH / "output",
         }[name]
 
     def read(self, content_path: str or Path) -> Movie:

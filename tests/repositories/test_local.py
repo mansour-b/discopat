@@ -1,18 +1,16 @@
 import pytest
-
-from patrick.repositories.local import (
-    PATRICK_DIR_PATH,
+from discopat.repositories.local import (
+    DISCOPATH,
     LocalFrameRepository,
     LocalMovieRepository,
 )
 
 
 class TestLocalFrameRepository:
-
     def test_init(self):
         repo = LocalFrameRepository("input_frames")
         assert repo.name == "input_frames"
-        assert repo._directory_path == PATRICK_DIR_PATH / "input"
+        assert repo._directory_path == DISCOPATH / "input"
         with pytest.raises(KeyError):
             LocalFrameRepository("input")
 
@@ -26,11 +24,10 @@ class TestLocalFrameRepository:
 
 
 class TestLocalMovieRepository:
-
     def test_init(self):
         repo = LocalMovieRepository("input_movies")
         assert repo.name == "input_movies"
-        assert repo._directory_path == PATRICK_DIR_PATH / "input"
+        assert repo._directory_path == DISCOPATH / "input"
         with pytest.raises(KeyError):
             LocalMovieRepository("input")
 

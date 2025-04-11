@@ -1,12 +1,12 @@
-.. Pattern Discovery Kit documentation master file, created by
+.. DISCOPAT documentation master file, created by
    sphinx-quickstart on Sat Mar 29 17:15:49 2025.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Pattern Discovery Kit documentation
-===================================
+DISCOPAT documentation
+======================
 
-Documentation of the ``patrick`` package.
+Documentation of the ``discopat`` package.
 
 .. toctree::
    :maxdepth: 2
@@ -17,7 +17,7 @@ Documentation of the ``patrick`` package.
    :recursive:
    :caption: Documentation
 
-   patrick
+   discopat
 
 .. toctree::
    :maxdepth: 2

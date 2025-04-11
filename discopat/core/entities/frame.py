@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from discopat.core.entities.annotation import (
+    Annotation,
+    annotation_dict_factory,
+)
+from discopat.core.entities.metadata import Metadata
 from typing_extensions import Self
 
-from patrick.core.entities.annotation import Annotation, annotation_dict_factory
-from patrick.core.entities.metadata import Metadata
-
 if TYPE_CHECKING:
-    from patrick.core.entities.array import Array
+    from discopat.core.entities.array import Array
 
 
 class Frame(Metadata):

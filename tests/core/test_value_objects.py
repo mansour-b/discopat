@@ -1,6 +1,5 @@
 import pytest
-
-from patrick.core import ComputingDevice, DataSource, Framework
+from discopat.core import ComputingDevice, DataSource, Framework
 
 
 def test_computing_device():

@@ -1,12 +1,12 @@
-.. image:: https://raw.githubusercontent.com/mansour-b/pattern-discovery-kit/main/assets/patrick_hollywood.png
+.. image:: https://raw.githubusercontent.com/mansour-b/discopat/main/assets/discopat_hollywood.png
    :align: center
 
-PATteRn dIsCovery Kit (PATRICK)
--------------------------------
+DISCOver PATterns (DISCOPAT)
+----------------------------
 
 |Build Status| |Code Coverage|
 
-Welcome to the Pattern Discovery Kit!
+Welcome to ``discopat``, the pattern discovery library!
 
 This library provides tools to discover, detect, and track meaningful patterns
 in physical signals. These signals can be of various forms:
@@ -19,12 +19,12 @@ in physical signals. These signals can be of various forms:
 Installation
 ------------
 
-You can install the ``pattern-discovery-kit`` from the source code by doing the following::
+You can install ``discopat`` by doing the following::
 
-    pip install pattern-discovery-kit
+    pip install discopat
 
 You can then try running `this notebook
-<https://github.com/mansour-b/pattern-discovery-kit/blob/main/examples/model_inference.ipynb>`_
+<https://github.com/mansour-b/discopat/blob/main/examples/model_inference.ipynb>`_
 on your computer to verify that the installation was succesful.
 
 Quickstart
@@ -36,8 +36,8 @@ Here is an example to briefly present the API:
 
     import numpy as np
 
-    from patrick.core import Box, Frame, Model, Movie, Tracker
-    from patrick.display import plot_frame
+    from discopat.core import Box, Frame, Model, Movie, Tracker
+    from discopat.display import plot_frame
 
     # Define the dimensions of the problem
     frame_width = 5
@@ -87,8 +87,8 @@ Here is an example to briefly present the API:
     # TBD: make a GIF to show the tracks
     export_to_gif(analysed_movie, fps=gif_frames_per_seconds)
 
-.. |Build Status| image:: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml/badge.svg
-   :target: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml
+.. |Build Status| image:: https://github.com/mansour-b/discopat/actions/workflows/pytest.yaml/badge.svg
+   :target: https://github.com/mansour-b/discopat/actions/workflows/pytest.yaml
 
-.. |Code Coverage| image:: https://codecov.io/github/mansour-b/patrick/graph/badge.svg?token=E37XYKWFWT
-   :target: https://codecov.io/github/mansour-b/patrick
+.. |Code Coverage| image:: https://codecov.io/github/mansour-b/discopat/graph/badge.svg?token=E37XYKWFWT
+   :target: https://codecov.io/github/mansour-b/discopat
