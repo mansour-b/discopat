@@ -6,7 +6,7 @@ from pathlib import Path
 # -- Path setup --------------------------------------------------------------
 on_rtd = os.environ.get("READTHEDOCS") == "True"
 if on_rtd:
-    sys.path.insert(0, Path("..").resolve())
+    sys.path.insert(0, os.path.abspath(".."))
 
 
 # -- Project information -----------------------------------------------------
