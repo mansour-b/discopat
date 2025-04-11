@@ -3,7 +3,18 @@ import sys
 from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
-sys.path.insert(0, Path("..").resolve())
+root_path = Path("..").resolve()
+print(f"Adding to sys.path: {root_path}")
+print(f"Contents: {list(root_path.glob('*'))}")
+sys.path.insert(0, root_path)
+
+try:
+    import patrick
+
+    print("Successfully imported my_package")
+except Exception as e:
+    print("Failed to import my_package:", e)
+
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
