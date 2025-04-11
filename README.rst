@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/mansour-b/pattern-discovery-kit/main/assets/discopat_hollywood.png
+.. image:: https://raw.githubusercontent.com/mansour-b/discopat/main/assets/discopat_hollywood.png
    :align: center
 
 PATteRn dIsCovery Kit (DISCOPAT)
@@ -19,12 +19,12 @@ in physical signals. These signals can be of various forms:
 Installation
 ------------
 
-You can install the ``pattern-discovery-kit`` from the source code by doing the following::
+You can install ``discopat`` by doing the following::
 
-    pip install pattern-discovery-kit
+    pip install discopat
 
 You can then try running `this notebook
-<https://github.com/mansour-b/pattern-discovery-kit/blob/main/examples/model_inference.ipynb>`_
+<https://github.com/mansour-b/discopat/blob/main/examples/model_inference.ipynb>`_
 on your computer to verify that the installation was succesful.
 
 Quickstart
