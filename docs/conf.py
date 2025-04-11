@@ -5,9 +5,8 @@ from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
 on_rtd = os.environ.get("READTHEDOCS") == "True"
-print("on rtd", on_rtd)
 if on_rtd:
-    sys.path.insert(0, os.path.abspath(".."))  # or '../src' if using src layout
+    sys.path.insert(0, Path("..").resolve())
 
 
 # -- Project information -----------------------------------------------------
