@@ -7,7 +7,7 @@ packages = ["discopat"]
 
 [project]
 name = "discopat"
-version = "0.2.3"
+version = "0.3.0"
 readme = "README.rst"
 description = "DISCOver PATterns (DISCOPAT)"
 license = {file = "LICENSE"}
@@ -47,6 +47,7 @@ test = [
 
 [project.urls]
 Repository = "https://github.com/mansour-b/discopat"
+Documentation = "https://discopat.readthedocs.io"
 
 [tool.ruff]
 exclude = [
