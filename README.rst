@@ -24,7 +24,7 @@ You can install ``discopat`` by doing the following::
     pip install discopat
 
 You can then try running `this notebook
-<https://github.com/mansour-b/discopat/blob/main/examples/model_inference.ipynb>`_
+<https://github.com/mansour-b/discopat/blob/main/examples/plot_model_inference.py>`_
 on your computer to verify that the installation was succesful.
 
 Quickstart
