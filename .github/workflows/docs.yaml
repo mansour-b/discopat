@@ -2,10 +2,7 @@ name: Build Docs
 
 on:
   pull_request:
-    paths:
-      - 'docs/**'
-      - '**.py'
-      - '.github/workflows/docs.yaml'
+    branches: main
 
 jobs:
   build-docs:
