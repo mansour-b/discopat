@@ -37,8 +37,10 @@ class FasterRCNNModel(NNModel):
         input_array = torch.as_tensor(input_array)
         return input_array.to(torch.float32).to(self._concrete_device)
 
-    def post_process(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
-        predictions = predictions[0]
+    def post_process(
+        self, raw_predictions: list[dict[torch.Tensor]]
+    ) -> list[Box]:
+        predictions = raw_predictions[0]
 
         kept_indices = nms(
             boxes=predictions["boxes"],

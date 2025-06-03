@@ -28,6 +28,17 @@ class Model(ABC):
 
         """
 
+    @abstractmethod
+    def pre_process(self, frame: Frame) -> Array:
+        """Prepare the frame's array to pass through the internal detector.
+
+        Can be a neural net, a convolutional sparse encoder...
+        """
+
+    @abstractmethod
+    def post_process(self, raw_predictions: Any) -> list[Annotation]:
+        """Adapt the internal detector's predictions to discopat's format."""
+
     @classmethod
     @abstractmethod
     def from_dict(cls, model_as_dict: dict) -> Self:
@@ -88,8 +99,8 @@ class NNModel(Model):
 
         The method follows the following scheme:
             - input_frame ------[pre-processing ]--> input_array,
-            - input_array ------[      net      ]--> net_predictions,
-            - net_predictions --[post_processing]--> output_frame.
+            - input_array ------[      net      ]--> raw_predictions,
+            - raw_predictions --[post_processing]--> output_frame.
 
         Args:
             frame (Frame): Object representing the image or movie frame on
@@ -110,14 +121,6 @@ class NNModel(Model):
             annotations=annotations,
             image_array=frame.image_array,
         )
-
-    @abstractmethod
-    def pre_process(self, frame: Frame) -> Array:
-        """Prepare the frame's array to pass through the neural network."""
-
-    @abstractmethod
-    def post_process(self, net_predictions: Any) -> list[Annotation]:
-        """Convert the net's predictions into discopat's "Annotation" format."""
 
     @abstractmethod
     def set_device(self, device: ComputingDevice) -> None:
