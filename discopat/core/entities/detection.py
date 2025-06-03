@@ -3,11 +3,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
+from typing_extensions import Self
+
 from discopat.core.entities.annotation import Annotation
 from discopat.core.entities.array import Array
 from discopat.core.entities.frame import Frame
 from discopat.core.value_objects import ComputingDevice
-from typing_extensions import Self
 
 
 class Model(ABC):
@@ -125,3 +126,6 @@ class NNModel(Model):
 
 class CDModel(Model):
     """Abstract class representing convolutional-dictionary-based models."""
+
+    def __init__(self):
+        pass
