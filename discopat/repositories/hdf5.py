@@ -37,3 +37,6 @@ class HDF5Repository(LocalRepository):
             ],
             tracks=[],
         )
+
+    def write(self, content_path, content) -> None:
+        pass
