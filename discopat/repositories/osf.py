@@ -75,6 +75,15 @@ class OSFNNModelRepository(OSFRepository):
 
 class OSFMovieRepository(OSFRepository):
     def __init__(self, name: str):
+        # TODO: fix this copy-paste hack
+        DISCOPAT_OSF_PROJECT_ID = "jtp4z"
+
+        osf = OSF()
+        project = osf.project(DISCOPAT_OSF_PROJECT_ID)
+        storage = project.storage("osfstorage")
+
+        STORAGE_DICT = {file.path[1:]: file for file in storage.files}
+
         self.name = name
 
         folder_name = {"input_movies": "input"}[name]
