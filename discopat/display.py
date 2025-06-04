@@ -9,8 +9,9 @@ from matplotlib import pyplot as plt
 from moviepy.video.io.bindings import mplfig_to_npimage
 
 if TYPE_CHECKING:
-    from discopat.core import Annotation, Box, Frame, Keypoint
     from matplotlib.axes._axes import Axes
+
+    from discopat.core import Annotation, Box, Frame, Keypoint
 
 
 def make_movie(
@@ -52,7 +53,7 @@ def plot_frame(
     for annotation in frame.annotations:
         plot_annotation(ax, annotation, color=annotation_color)
     if show_figure:
-        fig.show()
+        plt.show()
     if return_figure:
         return fig
 
@@ -81,6 +82,4 @@ def plot_keypoint(ax: Axes, keypoint: Keypoint, color: str):
         point_2 = point_list[i + 1]
         x1, y1 = point_1
         x2, y2 = point_2
-        ax.plot([x1, x2], [y1, y2], color=color)
-        ax.plot([x1, x2], [y1, y2], color=color)
         ax.plot([x1, x2], [y1, y2], color=color)
