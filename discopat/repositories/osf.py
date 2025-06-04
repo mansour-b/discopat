@@ -12,20 +12,21 @@ from osfclient import OSF
 from discopat.core import Frame, Movie
 from discopat.repositories.repository import Repository
 
-DISCOPAT_OSF_PROJECT_ID = "jtp4z"
-
-osf = OSF()
-project = osf.project(DISCOPAT_OSF_PROJECT_ID)
-storage = project.storage("osfstorage")
-
-STORAGE_DICT = {file.path[1:]: file for file in storage.files}
-
 
 class OSFRepository(Repository):
     data_source = "osf"
 
     def __init__(self, name: str):
         super().__init__(name)
+
+        DISCOPAT_OSF_PROJECT_ID = "jtp4z"
+
+        osf = OSF()
+        project = osf.project(DISCOPAT_OSF_PROJECT_ID)
+        storage = project.storage("osfstorage")
+
+        STORAGE_DICT = {file.path[1:]: file for file in storage.files}
+
         self._path = Path(name)
         self._storage_dict = {
             k: v for k, v in STORAGE_DICT.items() if k.split("/")[0] == name
