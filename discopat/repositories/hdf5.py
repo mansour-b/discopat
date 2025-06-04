@@ -10,7 +10,7 @@ from discopat.repositories.local import DATA_DIR_PATH, LocalRepository
 class HDF5Repository(LocalRepository):
     def __init__(self, name: str):
         super().__init__(name)
-        self._input_directory_path = DATA_DIR_PATH / "tokam2d" / self.name
+        self._input_directory_path = DATA_DIR_PATH / self.name
 
     def read(self, content_path: str or Path) -> Movie:
         file_path = (
