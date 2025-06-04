@@ -7,9 +7,10 @@ from typing import Any
 
 import numpy as np
 import yaml
+from osfclient import OSF
+
 from discopat.core import Frame, Movie
 from discopat.repositories.repository import Repository
-from osfclient import OSF
 
 DISCOPAT_OSF_PROJECT_ID = "jtp4z"
 

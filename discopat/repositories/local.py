@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 import yaml
+
 from discopat.core import Frame, Movie, NNModel
 from discopat.repositories.repository import Repository
 
