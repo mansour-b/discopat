@@ -1,8 +1,8 @@
 # %%
+import json
 from pathlib import Path
 from xml.etree.ElementTree import Element
 
-import numpy as np
 from defusedxml.ElementTree import parse
 
 from discopat.core import Box, Frame, Movie
@@ -31,7 +31,7 @@ def xml_to_box(element: Element) -> Box:
     ymax = float(info_dict["ybr"]) - h_padding
 
     return Box(
-        label=element.attrib["label"],
+        label=str(element.attrib["label"]),
         x=xmin,
         y=ymin,
         width=xmax - xmin,
@@ -43,7 +43,7 @@ def xml_to_box(element: Element) -> Box:
 def xml_to_frame(element: Element) -> Frame:
     """Make frames from CVAT annotations."""
     return Frame(
-        name=element.attrib["name"].split(".")[0],
+        name=str(element.attrib["name"].split(".")[0]),
         width=int(element.attrib["width"]) - 2 * w_padding,
         height=int(element.attrib["height"]) - 2 * h_padding,
         annotations=[xml_to_box(xml_bbox) for xml_bbox in element],
@@ -53,7 +53,7 @@ def xml_to_frame(element: Element) -> Frame:
 def xml_to_movie(element: Element) -> Movie:
     """Make movies from CVAT annotations."""
     return Movie(
-        name=element.find("meta/task/name"),
+        name=str(element.find("meta/task/name")),
         frames=[
             xml_to_frame(frame_xml) for frame_xml in element.findall("image")
         ],
@@ -98,4 +98,8 @@ if __name__ == "__main__":
         frame.image_array = image_dict[frame.name]
         plot_frame(frame)
 
-# %%
+    # %%
+    # Write annotations in a file
+    output_path = annotation_path.parent / "annotated_movie.json"
+    with Path.open(output_path, "w") as f:
+        json.dump(annotated_movie.to_dict(), f, indent=2)
