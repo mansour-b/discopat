@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from discopat.core.entities.annotation import Track
 from discopat.core.entities.frame import Frame
 from discopat.core.entities.metadata import Metadata
-from typing_extensions import Self
 
 
 class Movie(Metadata):

@@ -4,7 +4,7 @@ from xml.etree.ElementTree import Element
 
 from defusedxml.ElementTree import parse
 
-from discopat.core import Box, Frame
+from discopat.core import Box, Frame, Movie
 from discopat.repositories.local import DISCOPATH
 
 # %%
@@ -43,12 +43,15 @@ def xml_to_frame(element: Element) -> Frame:
     )
 
 
+def xml_to_movie(element: Element) -> Movie:
+    return Movie(
+        name=element.find("meta/task/name"),
+        frames=[
+            xml_to_frame(frame_xml) for frame_xml in element.findall("image")
+        ],
+        tracks=[],
+    )
+
+
 # %%
-for frame_xml in root.findall("image"):
-    print("===")
-    print(xml_to_frame(frame_xml))
-    print()
-# %%
-for box in xml_to_frame(frame_xml).annotations:
-    print(box)
-# %%
+movie = xml_to_movie(root)
