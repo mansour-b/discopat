@@ -59,7 +59,7 @@ def plot_frame(
 
 
 def plot_annotation(ax: Axes, annotation: Annotation, color: str):
-    annotation_type_dict = {"box": plot_box, "polyline": plot_keypoint}
+    annotation_type_dict = {"box": plot_box, "keypoint": plot_keypoint}
     plot_function = annotation_type_dict[annotation.type]
     plot_function(ax, annotation, color)
 
