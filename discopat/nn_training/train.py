@@ -4,7 +4,7 @@ import sys
 import torch
 import torch.distributed as dist
 
-from patrick.nn_training.utils import (
+from discopat.nn_training.utils import (
     MetricLogger,
     SmoothedValue,
     get_world_size,

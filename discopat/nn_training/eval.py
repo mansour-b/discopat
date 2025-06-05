@@ -12,7 +12,7 @@ from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
-from patrick.nn_training.utils import MetricLogger, get_world_size
+from discopat.nn_training.utils import MetricLogger, get_world_size
 
 
 def helper_evaluate(imgs):

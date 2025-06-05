@@ -1,16 +1,14 @@
 import torch
 
-from patrick.nn_training.nn_trainer import NNTrainer
-from patrick.nn_training.torch_detection_utils.engine import (
+from discopat.nn_training.nn_trainer import NNTrainer
+from discopat.nn_training.torch_detection_utils.engine import (
     evaluate,
     train_one_epoch,
 )
 
 
 class TorchNNTrainer(NNTrainer):
-
     def train(self, num_epochs: int):
-
         print_frequency = self.training_loop_params["print_frequency"]
 
         for epoch in range(num_epochs):
