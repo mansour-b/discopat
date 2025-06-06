@@ -5,7 +5,7 @@ from xml.etree.ElementTree import Element
 
 from defusedxml.ElementTree import parse
 
-from discopat.core import Box, Frame, Movie
+from discopat.core import Annotation, Box, Frame, Keypoint, Movie
 from discopat.display import plot_frame
 from discopat.repositories.hdf5 import HDF5Repository
 from discopat.repositories.local import DISCOPATH
@@ -40,6 +40,22 @@ def xml_to_box(element: Element) -> Box:
     )
 
 
+def xml_to_keypoint(element: Element) -> Keypoint:
+    """Convert CVAT's polyline annotation to discopat's Keypoint."""
+    info_dict = element.attrib
+
+    label = str(info_dict["label"])
+
+    point_list = str(info_dict["points"])
+    point_list = point_list.split(";")
+    point_list = [point.split(",") for point in point_list]
+    point_list = [(float(point[0]), float(point[1])) for point in point_list]
+
+    res = Keypoint(label=label, point_list=point_list, score=1.0)
+    print(res)
+    return res
+
+
 def xml_to_frame(element: Element) -> Frame:
     """Make frames from CVAT annotations."""
     return Frame(
@@ -63,8 +79,8 @@ def xml_to_movie(element: Element) -> Movie:
 
 # %%
 if __name__ == "__main__":
-    simulation = "250603_105600"
-    annotation_task = "250604_115800"
+    simulation = "260605_164500"
+    annotation_task = "250606_110200"
 
     # %%
     # Load annotations
