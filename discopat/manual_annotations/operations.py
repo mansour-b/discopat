@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from discopat.core import Box, Keypoint
+from discopat.core import Box, Frame, Keypoint
 
 
 def keypoint_to_box(
@@ -36,3 +36,15 @@ def get_bounding_box(
     ymax = max(point[1] for point in point_list)
 
     return xmin, xmax, ymin, ymax
+
+
+def turn_keypoints_into_boxes(
+    frame: Frame, w_padding: float, h_padding: float
+) -> None:
+    """Turn all keypoint annotations of a frame into boxes."""
+    frame.annotations = [
+        keypoint_to_box(annotation, w_padding=w_padding, h_padding=h_padding)
+        if annotation.type == "keypoint"
+        else annotation
+        for annotation in frame.annotations
+    ]

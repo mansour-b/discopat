@@ -7,6 +7,7 @@ from defusedxml.ElementTree import parse
 
 from discopat.core import Annotation, Box, Frame, Keypoint, Movie
 from discopat.display import plot_frame
+from discopat.manual_annotations.operations import turn_keypoints_into_boxes
 from discopat.repositories.hdf5 import HDF5Repository
 from discopat.repositories.local import DISCOPATH
 
@@ -56,13 +57,23 @@ def xml_to_keypoint(element: Element) -> Keypoint:
     return res
 
 
+def xml_to_annotation(element: Element) -> Annotation:
+    if element.tag == "box":
+        return xml_to_box(element)
+    if element.tag == "keypoint":
+        return xml_to_keypoint(element)
+    raise ValueError(f"Unknown annotation type: {element.tag}")
+
+
 def xml_to_frame(element: Element) -> Frame:
     """Make frames from CVAT annotations."""
     return Frame(
         name=str(element.attrib["name"].split(".")[0]),
         width=int(element.attrib["width"]) - 2 * w_padding,
         height=int(element.attrib["height"]) - 2 * h_padding,
-        annotations=[xml_to_box(xml_bbox) for xml_bbox in element],
+        annotations=[
+            xml_to_annotation(xml_annotation) for xml_annotation in element
+        ],
     )
 
 
@@ -112,6 +123,18 @@ if __name__ == "__main__":
     for frame in annotated_movie.frames:
         frame.resize(target_width=width, target_height=height)
         frame.image_array = image_dict[frame.name]
+        plot_frame(frame)
+
+    # %%
+    # Turn all keypoints into boxes
+    w_padding = 0.5
+    h_padding = 0.5
+    for frame in annotated_movie.frames:
+        turn_keypoints_into_boxes(frame)
+
+    # %%
+    # Visual check
+    for frame in annotated_movie.frames:
         plot_frame(frame)
 
     # %%
