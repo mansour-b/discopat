@@ -32,8 +32,8 @@ def train_one_epoch(
     for images, targets in metric_logger.log_every(
         data_loader, print_freq, header
     ):
-        images = list(image.float().to(device) for image in images)
-        targets = [
+        input_images = [image.float().to(device) for image in images]
+        train_targets = [
             {
                 k: v.to(torch.int64).to(device)
                 if isinstance(v, torch.Tensor)
@@ -42,8 +42,8 @@ def train_one_epoch(
             }
             for t in targets
         ]
-        with torch.amp.autocast("cuda", enabled=scaler is not None):
-            loss_dict = model(images, targets)
+        with torch.amp.autocast(str(device), enabled=scaler is not None):
+            loss_dict = model(input_images, train_targets)
             losses = sum(loss for loss in loss_dict.values())
 
         # reduce losses over all GPUs for logging purposes
