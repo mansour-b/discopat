@@ -15,7 +15,9 @@ def train_one_epoch(
 ):
     model.train()
     metric_logger = MetricLogger(delimiter="  ")
-    metric_logger.add_meter("lr", SmoothedValue(window_size=1, fmt="{value:.6f}"))
+    metric_logger.add_meter(
+        "lr", SmoothedValue(window_size=1, fmt="{value:.6f}")
+    )
     header = f"Epoch: [{epoch}]"
 
     lr_scheduler = None
@@ -27,16 +29,20 @@ def train_one_epoch(
             optimizer, start_factor=warmup_factor, total_iters=warmup_iters
         )
 
-    for images, targets in metric_logger.log_every(data_loader, print_freq, header):
-        images = list(image.to(device) for image in images)
+    for images, targets in metric_logger.log_every(
+        data_loader, print_freq, header
+    ):
+        images = list(image.float().to(device) for image in images)
         targets = [
             {
-                k: v.to(device) if isinstance(v, torch.Tensor) else v
+                k: v.to(torch.int64).to(device)
+                if isinstance(v, torch.Tensor)
+                else v
                 for k, v in t.items()
             }
             for t in targets
         ]
-        with torch.cuda.amp.autocast(enabled=scaler is not None):
+        with torch.amp.autocast("cuda", enabled=scaler is not None):
             loss_dict = model(images, targets)
             losses = sum(loss for loss in loss_dict.values())
 
@@ -106,11 +112,16 @@ def evaluate(model, data_loader, device):
         outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
         model_time = time.time() - model_time
 
-        res = {target["image_id"]: output for target, output in zip(targets, outputs)}
+        res = {
+            target["image_id"]: output
+            for target, output in zip(targets, outputs)
+        }
         evaluator_time = time.time()
         coco_evaluator.update(res)
         evaluator_time = time.time() - evaluator_time
-        metric_logger.update(model_time=model_time, evaluator_time=evaluator_time)
+        metric_logger.update(
+            model_time=model_time, evaluator_time=evaluator_time
+        )
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()

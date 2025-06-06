@@ -41,6 +41,8 @@ class TorchNNTrainer(NNTrainer):
 
     @property
     def _concrete_device(self) -> torch.device:
-        return {"cpu": torch.device("cpu"), "gpu": torch.device("cuda")}[
-            self.device
-        ]
+        return {
+            "cpu": torch.device("cpu"),
+            "gpu": torch.device("cuda"),
+            "mps": torch.device("mps"),
+        }[self.device]

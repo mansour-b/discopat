@@ -56,7 +56,7 @@ class TorchDataset(Dataset):
         return [box.xmin, box.ymin, box.xmax, box.ymax]
 
     def _make_xyxy_box_array(self, box_list: list[Box]) -> np.array:
-        return np.array([self.box_to_xyxy_format(box) for box in box_list])
+        return np.array([self._box_to_xyxy_format(box) for box in box_list])
 
     def _make_label_array(self, box_list: list[Box]) -> np.array:
         label_map = self._label_map
