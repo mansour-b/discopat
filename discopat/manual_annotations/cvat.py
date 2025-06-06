@@ -19,8 +19,8 @@ from discopat.repositories.local import DISCOPATH
 # Then I did not remove the margins of the saved figure
 # -> savefig added white margins in order to save 640x480 images
 # Now I have to compute these paddings and substract them from the coordinates.
-w_padding = (640 - 370) / 2
-h_padding = (480 - 370) / 2
+w_padding = 0  # (640 - 370) / 2
+h_padding = 0  # (480 - 370) / 2
 
 
 def xml_to_box(element: Element) -> Box:
@@ -60,7 +60,7 @@ def xml_to_keypoint(element: Element) -> Keypoint:
 def xml_to_annotation(element: Element) -> Annotation:
     if element.tag == "box":
         return xml_to_box(element)
-    if element.tag == "keypoint":
+    if element.tag == "polyline":
         return xml_to_keypoint(element)
     raise ValueError(f"Unknown annotation type: {element.tag}")
 
@@ -90,7 +90,7 @@ def xml_to_movie(element: Element) -> Movie:
 
 # %%
 if __name__ == "__main__":
-    simulation = "260605_164500"
+    simulation = "250605_164500"
     annotation_task = "250606_110200"
 
     # %%
@@ -127,10 +127,12 @@ if __name__ == "__main__":
 
     # %%
     # Turn all keypoints into boxes
-    w_padding = 0.5
-    h_padding = 0.5
+    k2b_w_padding = 1
+    k2b_h_padding = 1
     for frame in annotated_movie.frames:
-        turn_keypoints_into_boxes(frame)
+        turn_keypoints_into_boxes(
+            frame, w_padding=k2b_w_padding, h_padding=k2b_h_padding
+        )
 
     # %%
     # Visual check
@@ -142,3 +144,5 @@ if __name__ == "__main__":
     output_path = annotation_path.parent / "annotated_movie.json"
     with Path.open(output_path, "w") as f:
         json.dump(annotated_movie.to_dict(), f, indent=2)
+
+# %%
