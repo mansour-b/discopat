@@ -23,6 +23,7 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
+  "h5py",
   "imageio",
   "ipykernel",
   "matplotlib",
@@ -38,6 +39,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+  "pycocotools",
   "ruff",
 ]
 doc = [
