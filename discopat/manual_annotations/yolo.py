@@ -21,7 +21,7 @@ class YoloAnnotationImporter:
 
     def get_image_dimensions(self) -> None:
         path = next(
-            iter((self.data_dir / "images").glob(f"{self.simulation}_*.png"))
+            iter((self.data_dir / "images" / self.simulation).glob("*.png"))
         )
         with Path.open(path, "rb") as f:
             signature = f.read(8)
@@ -64,6 +64,7 @@ class YoloAnnotationImporter:
             y=y_center - height / 2,
             width=width,
             height=height,
+            score=1.0,
         )
 
     def txt_to_frame(self, txt_frame: str, frame_name: str) -> Frame:
