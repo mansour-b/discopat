@@ -1,14 +1,9 @@
-# %%
-# Imports
 from __future__ import annotations
 
 from pathlib import Path
 
 from discopat.core import Box, Frame, Movie
 from discopat.repositories.local import DISCOPATH
-
-# %%
-# Function definitions
 
 
 class YoloAnnotationImporter:
