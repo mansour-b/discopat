@@ -22,12 +22,25 @@ class YoloAnnotationImporter:
         self.label_map = label_map
         self.simulation = simulation
 
-        self.image_width = None
-        self.image_height = None
         self.get_image_dimensions()
 
-    def get_image_dimensions():
-        pass
+    def get_image_dimensions(self) -> None:
+        path = next(
+            iter((self.data_dir / "images").glob(f"{self.simulation}_*.png"))
+        )
+        with Path.open(path, "rb") as f:
+            signature = f.read(8)
+            if signature != b"\x89PNG\r\n\x1a\n":
+                raise ValueError("Not a valid PNG file")
+
+            ihdr = f.read(
+                25
+            )  # 4 (length) + 4 (chunk type) + 13 (data) + 4 (CRC)
+            if ihdr[4:8] != b"IHDR":
+                raise ValueError("IHDR chunk missing")
+
+            self.image_width = int.from_bytes(ihdr[8:12], "big")
+            self.image_height = int.from_bytes(ihdr[12:16], "big")
 
     def txt_to_box(self, txt_box: str) -> Box:
         """Convert txt box annotation to discopat's Box format.

@@ -99,7 +99,11 @@ docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = []
+ignore = [
+  "COM812",
+  "EM101",
+  "TRY003",
+]
 
 fixable = ["ALL"]
 unfixable = []
