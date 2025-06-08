@@ -23,6 +23,7 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
+  "filterpy",
   "h5py",
   "imageio",
   "ipykernel",
@@ -31,6 +32,7 @@ dependencies = [
   "numpy",
   "osfclient",
   "PyYAML",
+  "scikit-image",
   "torch",
   "torchaudio",
   "torchvision",
