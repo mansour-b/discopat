@@ -100,6 +100,7 @@ docstring-code-line-length = "dynamic"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+  "ANN204",
   "COM812",
   "EM101",
   "TRY003",

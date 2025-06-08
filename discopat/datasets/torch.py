@@ -5,6 +5,8 @@ from abc import abstractmethod
 import numpy as np
 import torch
 from torch.utils.data import Dataset
+from torchvision import tv_tensors
+from torchvision.transforms import v2 as T  # noqa: N812
 
 from discopat.core import Box, Frame, Keypoint
 from discopat.manual_annotations.operations import keypoint_to_box
@@ -15,17 +17,21 @@ class TorchDataset(Dataset):
         self,
         frame_list: list[Frame],
         label_map: dict[str, int],
+        transforms: T.Transform or None = None,
         channel_mode: str = "channels_first",
     ):
         self._frame_list = frame_list
         self._label_map = label_map
+        self._transforms = (
+            transforms if transforms is not None else T.Identity()
+        )
         self._channel_mode = channel_mode
 
     def __getitem__(self, index: int):
         frame = self._frame_list[index]
-        image_tensor = self.prepare_image_tensor(frame)
+        image = self.prepare_image_tensor(frame)
         target = self.make_target(frame)
-        return image_tensor, target
+        return self._transforms(image, target)
 
     def __len__(self: int):
         return len(self._frame_list)
@@ -80,7 +86,12 @@ class TorchBoxDataset(TorchDataset):
 
         return {
             "area": torch.as_tensor(area_array),
-            "boxes": torch.as_tensor(box_array, dtype=torch.float32),
+            "boxes": tv_tensors.BoundingBoxes(
+                box_array,
+                format="XYXY",
+                canvas_size=(frame.height, frame.width),
+                dtype=torch.float32,
+            ),
             "image_id": int(frame.name),
             "iscrowd": torch.zeros((len(box_list),), dtype=torch.int64),
             "labels": torch.as_tensor(label_array),
