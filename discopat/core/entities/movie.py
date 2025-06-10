@@ -36,3 +36,6 @@ class Movie(Metadata):
                 for track_as_dict in data_as_dict["tracks"]
             ],
         )
+
+    def __len__(self):
+        return len(self.frames)
