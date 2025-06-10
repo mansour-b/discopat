@@ -103,9 +103,12 @@ class FasterRCNNModel(NNModel):
 
     @property
     def _concrete_device(self) -> torch.device:
-        return {"cpu": torch.device("cpu"), "gpu": torch.device("cuda")}[
-            self._device
-        ]
+        return {
+            "cpu": torch.device("cpu"),
+            "cuda": torch.device("cuda"),
+            "gpu": torch.device("cuda"),
+            "mps": torch.device("mps"),
+        }[self._device]
 
     def set_device(self, device: ComputingDevice) -> None:
         self._device = device

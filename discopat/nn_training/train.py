@@ -12,13 +12,18 @@ from discopat.nn_training.utils import (
 
 
 def reduce_dict(input_dict, average=True):
-    """
+    """Reduce dict.
+
+    Reduce the values in the dictionary from all processes so that all processes
+    have the averaged results.
+
     Args:
         input_dict (dict): all the values will be reduced
         average (bool): whether to do average or sum
-    Reduce the values in the dictionary from all processes so that all processes
-    have the averaged results. Returns a dict with the same fields as
-    input_dict, after reduction.
+
+    Returns:
+        A dict with the same fields as input_dict, after reduction.
+
     """
     world_size = get_world_size()
     if world_size < 2:
