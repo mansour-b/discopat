@@ -45,9 +45,12 @@ def plot_frame(
     annotation_color: str = "tab:red",
     show_figure: bool = True,
     return_figure: bool = False,
+    figure_size: tuple[float, float] or None = None,
+    figure_dpi: int or None = None,
 ):
     image_array = frame.image_array
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1, figsize=figure_size, dpi=figure_dpi)
+    fig.subplots_adjust(top=1, bottom=0, left=0, right=1)
     ax.imshow(image_array, cmap=cmap)
     ax.axis("off")
     for annotation in frame.annotations:
