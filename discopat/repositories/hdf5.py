@@ -40,3 +40,38 @@ class HDF5Repository(LocalRepository):
 
     def write(self, content_path, content) -> None:
         pass
+
+
+class HDF5PotentialRepository(LocalRepository):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self._input_directory_path = DATA_DIR_PATH / self.name
+
+    def read(self, content_path: str or Path) -> Movie:
+        file_path = (
+            self._input_directory_path / content_path / "data_TOKAM_run_00.h5"
+        )
+        with h5py.File(file_path) as f:
+            potential = np.array(f["potential"])
+
+        num_frames = potential.shape[0]
+        width = potential.shape[2]
+        height = potential.shape[1]
+
+        return Movie(
+            name=f"{content_path}_potential",
+            frames=[
+                Frame(
+                    name=str(i),
+                    width=width,
+                    height=height,
+                    annotations=[],
+                    image_array=potential[i],
+                )
+                for i in range(num_frames)
+            ],
+            tracks=[],
+        )
+
+    def write(self, content_path, content) -> None:
+        pass
