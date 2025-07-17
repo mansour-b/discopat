@@ -16,16 +16,17 @@ class MOTRepository(LocalRepository):
         # TODO: maybe add options none, default, and all for detection models
         movie_info = self._parse_content_path(content_path)
         data_folder = (
-            self.input_directory_path / content_path
-            if movie_info["detection_model"] == ""
-            else self._input_directory_path / f"{content_path}-DPM"
+            content_path
+            if movie_info["detection_model"] != ""
+            else f"{content_path}-DPM"
         )
-        image_folder = data_folder / "img1"
-        annotation_folder = data_folder / "det"
+        data_path = self._input_directory_path / movie_info["set"] / data_folder
+        image_path = data_path / "img1"
+        annotation_path = data_path / "det"
 
         movie = Movie(name=str(content_path), frames=[], tracks=[])
-        for path in image_folder.glob("*.jpg"):
-            image = Image.open("your_image.jpg")
+        for path in image_path.glob("*.jpg"):
+            image = Image.open(path)
             image_array = np.array(image)
             height, width = image_array.shape[:2]
             movie.frames.append(
