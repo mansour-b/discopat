@@ -3,11 +3,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
+from typing_extensions import Self
+
 from discopat.core.entities.annotation import Annotation
 from discopat.core.entities.array import Array
 from discopat.core.entities.frame import Frame
 from discopat.core.value_objects import ComputingDevice
-from typing_extensions import Self
 
 
 class Model(ABC):
@@ -26,6 +27,17 @@ class Model(ABC):
                 appended to the list of already present annotations.
 
         """
+
+    @abstractmethod
+    def pre_process(self, frame: Frame) -> Array:
+        """Prepare the frame's array to pass through the internal detector.
+
+        Can be a neural net, a convolutional sparse encoder...
+        """
+
+    @abstractmethod
+    def post_process(self, raw_predictions: Any) -> list[Annotation]:
+        """Adapt the internal detector's predictions to discopat's format."""
 
     @classmethod
     @abstractmethod
@@ -87,8 +99,8 @@ class NNModel(Model):
 
         The method follows the following scheme:
             - input_frame ------[pre-processing ]--> input_array,
-            - input_array ------[      net      ]--> net_predictions,
-            - net_predictions --[post_processing]--> output_frame.
+            - input_array ------[      net      ]--> raw_predictions,
+            - raw_predictions --[post_processing]--> output_frame.
 
         Args:
             frame (Frame): Object representing the image or movie frame on
@@ -111,17 +123,12 @@ class NNModel(Model):
         )
 
     @abstractmethod
-    def pre_process(self, frame: Frame) -> Array:
-        """Prepare the frame's array to pass through the neural network."""
-
-    @abstractmethod
-    def post_process(self, net_predictions: Any) -> list[Annotation]:
-        """Convert the net's predictions into discopat's "Annotation" format."""
-
-    @abstractmethod
     def set_device(self, device: ComputingDevice) -> None:
         pass
 
 
 class CDModel(Model):
     """Abstract class representing convolutional-dictionary-based models."""
+
+    def __init__(self):
+        pass

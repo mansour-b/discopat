@@ -23,6 +23,8 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
+  "filterpy",
+  "h5py",
   "imageio",
   "ipykernel",
   "matplotlib",
@@ -30,6 +32,7 @@ dependencies = [
   "numpy",
   "osfclient",
   "PyYAML",
+  "scikit-image",
   "torch",
   "torchaudio",
   "torchvision",
@@ -38,6 +41,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+  "pycocotools",
   "ruff",
 ]
 doc = [
@@ -97,7 +101,12 @@ docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = []
+ignore = [
+  "ANN204",
+  "COM812",
+  "EM101",
+  "TRY003",
+]
 
 fixable = ["ALL"]
 unfixable = []

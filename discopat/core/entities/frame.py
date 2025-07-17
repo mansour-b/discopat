@@ -2,12 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from discopat.core.entities.annotation import (
-    Annotation,
-    annotation_dict_factory,
-)
-from discopat.core.entities.metadata import Metadata
 from typing_extensions import Self
+
+from discopat.core.entities.annotation import Annotation, annotation_factory
+from discopat.core.entities.metadata import Metadata
 
 if TYPE_CHECKING:
     from discopat.core.entities.array import Array
@@ -53,7 +51,7 @@ class Frame(Metadata):
             width=data_as_dict["width"],
             height=data_as_dict["height"],
             annotations=[
-                annotation_dict_factory(annotation_as_dict)
+                annotation_factory(annotation_as_dict)
                 for annotation_as_dict in data_as_dict["annotations"]
             ],
         )
@@ -76,3 +74,24 @@ class Frame(Metadata):
 
         for annotation in self.annotations:
             annotation.rescale(w_ratio, h_ratio)
+
+    def __str__(self):
+        printable_dict = {
+            attr: getattr(self, attr) for attr in self.printable_fields()
+        }
+        printable_dict["annotations"] = (
+            "[\n"
+            + 8 * " "
+            + (",\n" + 8 * " ").join(
+                [
+                    ("\n" + 8 * " ").join(str(annotation).split("\n"))
+                    for annotation in self.annotations
+                ]
+            )
+            + ",\n    ]"
+        )
+        attribute_str = ",\n    ".join(
+            [f"{k}={v}" for k, v in printable_dict.items()]
+        )
+        attribute_str += ","
+        return f"{type(self).__name__}(\n    {attribute_str}\n)"

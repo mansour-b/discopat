@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 import torch
-from discopat.cnn.faster_rcnn import FasterRCNNModel
+
 from discopat.core import Box, Frame
+from discopat.nn_models.faster_rcnn import FasterRCNNModel
 
 
 class MockNet:

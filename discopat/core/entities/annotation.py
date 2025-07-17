@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from discopat.core.entities.metadata import Metadata
 from typing_extensions import Self
+
+from discopat.core.entities.metadata import Metadata
 
 
 class Annotation(Metadata):
@@ -195,7 +196,7 @@ class Track(Annotation):
 ANNOTATION_TYPE_DICT = {"box": Box, "keypoint": Keypoint, "track": Track}
 
 
-def annotation_dict_factory(annotation_as_dict: dict) -> Annotation:
+def annotation_factory(annotation_as_dict: dict) -> Annotation:
     annotation_type = annotation_as_dict["type"]
     annotation_class = ANNOTATION_TYPE_DICT[annotation_type]
     return annotation_class.from_dict(annotation_as_dict)

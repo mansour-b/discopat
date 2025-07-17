@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import numpy as np
+from typing_extensions import Self
+
 from discopat.core import (
     Annotation,
     Array,
@@ -11,7 +13,6 @@ from discopat.core import (
     NeuralNet,
     NNModel,
 )
-from typing_extensions import Self
 
 
 class TestModel:
@@ -70,7 +71,7 @@ class TestNNModel:
             def pre_process(self, frame: Frame) -> Array:
                 return frame.image_array
 
-            def post_process(self, net_predictions: Array) -> list[Annotation]:
+            def post_process(self, raw_predictions: Array) -> list[Annotation]:
                 return [
                     Box(label="blob", x=1, y=1, width=1, height=1, score=1.0)
                 ]

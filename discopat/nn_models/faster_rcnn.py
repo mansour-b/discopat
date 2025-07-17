@@ -5,11 +5,12 @@ from typing import Any
 
 import numpy as np
 import torch
-from discopat.core import Box, ComputingDevice, Frame, NeuralNet, NNModel
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 from typing_extensions import Self
+
+from discopat.core import Box, ComputingDevice, Frame, NeuralNet, NNModel
 
 
 class FasterRCNNModel(NNModel):
@@ -36,8 +37,10 @@ class FasterRCNNModel(NNModel):
         input_array = torch.as_tensor(input_array)
         return input_array.to(torch.float32).to(self._concrete_device)
 
-    def post_process(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
-        predictions = predictions[0]
+    def post_process(
+        self, raw_predictions: list[dict[torch.Tensor]]
+    ) -> list[Box]:
+        predictions = raw_predictions[0]
 
         kept_indices = nms(
             boxes=predictions["boxes"],
@@ -100,9 +103,12 @@ class FasterRCNNModel(NNModel):
 
     @property
     def _concrete_device(self) -> torch.device:
-        return {"cpu": torch.device("cpu"), "gpu": torch.device("cuda")}[
-            self._device
-        ]
+        return {
+            "cpu": torch.device("cpu"),
+            "cuda": torch.device("cuda"),
+            "gpu": torch.device("cuda"),
+            "mps": torch.device("mps"),
+        }[self._device]
 
     def set_device(self, device: ComputingDevice) -> None:
         self._device = device
@@ -134,4 +140,8 @@ class TorchNetBuilder:
         return net
 
     def _load_weights(self, net: NeuralNet, weights: dict) -> None:
+        net.load_state_dict(weights)
+        net.load_state_dict(weights)
+        net.load_state_dict(weights)
+        net.load_state_dict(weights)
         net.load_state_dict(weights)

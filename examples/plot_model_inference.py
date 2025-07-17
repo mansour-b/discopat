@@ -5,15 +5,15 @@ Model Inference
 This example demonstrates how to detect structures with a CNN using ``discopat``.
 """
 
-from discopat.cnn import FasterRCNNModel
-from discopat.core import Movie
-from discopat.display import plot_frame
-from discopat.repositories import repository_factory
-
 # %%
 # Imports
 # -------
 from tqdm import tqdm
+
+from discopat.core import Movie
+from discopat.display import plot_frame
+from discopat.repositories import repository_factory
+from discopat.nn_models import FasterRCNNModel
 
 # %%
 # Definitions

@@ -9,8 +9,9 @@ from matplotlib import pyplot as plt
 from moviepy.video.io.bindings import mplfig_to_npimage
 
 if TYPE_CHECKING:
-    from discopat.core import Annotation, Box, Frame, Keypoint
     from matplotlib.axes._axes import Axes
+
+    from discopat.core import Annotation, Box, Frame, Keypoint
 
 
 def make_movie(
@@ -44,21 +45,24 @@ def plot_frame(
     annotation_color: str = "tab:red",
     show_figure: bool = True,
     return_figure: bool = False,
+    figure_size: tuple[float, float] or None = None,
+    figure_dpi: int or None = None,
 ):
     image_array = frame.image_array
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1, figsize=figure_size, dpi=figure_dpi)
+    fig.subplots_adjust(top=1, bottom=0, left=0, right=1)
     ax.imshow(image_array, cmap=cmap)
     ax.axis("off")
     for annotation in frame.annotations:
         plot_annotation(ax, annotation, color=annotation_color)
     if show_figure:
-        fig.show()
+        plt.show()
     if return_figure:
         return fig
 
 
 def plot_annotation(ax: Axes, annotation: Annotation, color: str):
-    annotation_type_dict = {"box": plot_box, "polyline": plot_keypoint}
+    annotation_type_dict = {"box": plot_box, "keypoint": plot_keypoint}
     plot_function = annotation_type_dict[annotation.type]
     plot_function(ax, annotation, color)
 
@@ -81,6 +85,4 @@ def plot_keypoint(ax: Axes, keypoint: Keypoint, color: str):
         point_2 = point_list[i + 1]
         x1, y1 = point_1
         x2, y2 = point_2
-        ax.plot([x1, x2], [y1, y2], color=color)
-        ax.plot([x1, x2], [y1, y2], color=color)
         ax.plot([x1, x2], [y1, y2], color=color)

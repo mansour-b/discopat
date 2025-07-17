@@ -7,17 +7,10 @@ from typing import Any
 
 import numpy as np
 import yaml
-from discopat.core import Frame, Movie
-from discopat.repositories.repository import Repository
 from osfclient import OSF
 
-DISCOPAT_OSF_PROJECT_ID = "jtp4z"
-
-osf = OSF()
-project = osf.project(DISCOPAT_OSF_PROJECT_ID)
-storage = project.storage("osfstorage")
-
-STORAGE_DICT = {file.path[1:]: file for file in storage.files}
+from discopat.core import Frame, Movie
+from discopat.repositories.repository import Repository
 
 
 class OSFRepository(Repository):
@@ -25,6 +18,15 @@ class OSFRepository(Repository):
 
     def __init__(self, name: str):
         super().__init__(name)
+
+        DISCOPAT_OSF_PROJECT_ID = "jtp4z"
+
+        osf = OSF()
+        project = osf.project(DISCOPAT_OSF_PROJECT_ID)
+        storage = project.storage("osfstorage")
+
+        STORAGE_DICT = {file.path[1:]: file for file in storage.files}
+
         self._path = Path(name)
         self._storage_dict = {
             k: v for k, v in STORAGE_DICT.items() if k.split("/")[0] == name
@@ -73,6 +75,15 @@ class OSFNNModelRepository(OSFRepository):
 
 class OSFMovieRepository(OSFRepository):
     def __init__(self, name: str):
+        # TODO: fix this copy-paste hack
+        DISCOPAT_OSF_PROJECT_ID = "jtp4z"
+
+        osf = OSF()
+        project = osf.project(DISCOPAT_OSF_PROJECT_ID)
+        storage = project.storage("osfstorage")
+
+        STORAGE_DICT = {file.path[1:]: file for file in storage.files}
+
         self.name = name
 
         folder_name = {"input_movies": "input"}[name]
