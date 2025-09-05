@@ -69,6 +69,7 @@ def load_set(set_name: str) -> Movie:
     for frame in movie.frames:
         frame.annotations = annotation_dict[frame.name]
 
+    print(f"Loaded {len(movie)} annotated images.")
     return movie
 
 
