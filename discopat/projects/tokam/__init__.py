@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
 
-from discopat.core import Movie
+from discopat.core import Model, Movie
+from discopat.nn_models import FasterRCNNModel
 from discopat.repositories.hdf5 import HDF5Repository
-from discopat.repositories.local import DISCOPATH
+from discopat.repositories.local import DISCOPATH, LocalNNModelRepository
+from discopat.utils import get_device
 
 MOVIE_TABLE = {
     "blob_dwi_512": "250610_103200",
@@ -21,6 +23,9 @@ SET_TABLE = {
 }
 
 MOVIE_REPO = HDF5Repository("tokam2d")
+MODEL_REPO = LocalNNModelRepository("models")
+
+COMPUTING_DEVICE = get_device()
 
 
 def load_movie(movie_name: str) -> Movie:
@@ -64,3 +69,11 @@ def load_set(set_name: str) -> Movie:
         frame.annotations = annotation_dict[frame.name]
 
     return movie
+
+
+def load_model(model_name: str) -> Model:
+    raw_model = MODEL_REPO.read(model_name)
+    model = FasterRCNNModel.from_dict(raw_model)
+    model.set_device(COMPUTING_DEVICE)
+
+    return model
