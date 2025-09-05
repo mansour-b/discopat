@@ -26,6 +26,7 @@ MOVIE_REPO = HDF5Repository("tokam2d")
 MODEL_REPO = LocalNNModelRepository("models")
 
 COMPUTING_DEVICE = get_device()
+print("Computing device:", COMPUTING_DEVICE)
 
 
 def load_movie(movie_name: str) -> Movie:
