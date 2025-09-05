@@ -36,7 +36,9 @@ def load_movie(movie_name: str) -> Movie:
             f"Allowed names: {sorted(MOVIE_TABLE)}"
         )
         raise ValueError(msg)
-    return MOVIE_REPO.read(MOVIE_TABLE[movie_name])
+    movie = MOVIE_REPO.read(MOVIE_TABLE[movie_name])
+    print(f"Loaded {len(movie)} frames.")
+    return movie
 
 
 def load_set(set_name: str) -> Movie:
@@ -69,7 +71,7 @@ def load_set(set_name: str) -> Movie:
     for frame in movie.frames:
         frame.annotations = annotation_dict[frame.name]
 
-    print(f"Loaded {len(movie)} annotated images.")
+    print(f"Loaded {len(movie)} annotated frames.")
     return movie
 
 
