@@ -44,6 +44,7 @@ class TorchNNTrainer(NNTrainer):
         return {
             "cpu": torch.device("cpu"),
             "cuda": torch.device("cuda"),
+            "cuda:3": torch.device("cuda:3"),
             "gpu": torch.device("cuda"),
             "mps": torch.device("mps"),
         }[self.device]
