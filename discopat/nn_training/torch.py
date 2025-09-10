@@ -16,7 +16,7 @@ class TorchNNTrainer(NNTrainer):
                 self.net,
                 self.optimiser,
                 self.dataset,
-                self._concrete_device,
+                self.device,
                 epoch,
                 print_freq=print_frequency,
             )
