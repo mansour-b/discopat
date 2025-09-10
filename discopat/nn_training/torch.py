@@ -21,7 +21,7 @@ class TorchNNTrainer(NNTrainer):
                 print_freq=print_frequency,
             )
             self.lr_scheduler.step()
-            evaluate(self.net, self.val_dataset, device=self._concrete_device)
+            evaluate(self.net, self.val_dataset, device=self.device)
 
     def set_default_optimiser(self) -> torch.optim.Optimizer:
         net_params = [p for p in self.net.parameters() if p.requires_grad]
