@@ -14,11 +14,15 @@ class NNTrainer(ABC):
         val_dataset: Dataset,
         parameters: dict[str, Any],
         device: ComputingDevice,
+        callbacks: list or None = None,
     ):
         self.net = net
         self.dataset = dataset
         self.val_dataset = val_dataset
         self.device = device
+        if callbacks is None:
+            callbacks = []
+        self.callbacks = callbacks
 
         (
             self.optimiser_params,
