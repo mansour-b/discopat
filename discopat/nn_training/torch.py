@@ -22,6 +22,8 @@ class TorchNNTrainer(NNTrainer):
             )
             self.lr_scheduler.step()
             evaluate(self.net, self.val_dataset, device=self.device)
+            for callback in self.callbacks:
+                callback(self.net, self.device)
 
     def set_default_optimiser(self) -> torch.optim.Optimizer:
         net_params = [p for p in self.net.parameters() if p.requires_grad]
