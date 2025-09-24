@@ -84,14 +84,18 @@ class TorchBoxDataset(TorchDataset):
         box_array = self._make_xyxy_box_array(box_list)
         label_array = self._make_label_array(box_list)
 
+        box_tensor = tv_tensors.BoundingBoxes(
+            box_array,
+            format="XYXY",
+            canvas_size=(frame.height, frame.width),
+            dtype=torch.float32,
+        )
+        box_tensor[..., 0::2] = box_tensor[..., 0::2].clamp(0, frame.width - 1)
+        box_tensor[..., 1::2] = box_tensor[..., 1::2].clamp(0, frame.height - 1)
+
         return {
             "area": torch.as_tensor(area_array),
-            "boxes": tv_tensors.BoundingBoxes(
-                box_array,
-                format="XYXY",
-                canvas_size=(frame.height, frame.width),
-                dtype=torch.float32,
-            ),
+            "boxes": torch.clamp(box_tensor, min=0, max=frame.width),
             "image_id": int(frame.name),
             "iscrowd": torch.zeros((len(box_list),), dtype=torch.int64),
             "labels": torch.as_tensor(label_array),
