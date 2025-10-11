@@ -33,23 +33,25 @@ class COCOevalIoMean(COCOeval):
             dt = dt[0 : p.maxDets[-1]]
 
         if p.iouType == "segm":
-            g = [g["segmentation"] for g in gt]
-            d = [d["segmentation"] for d in dt]
+            gt = [g["segmentation"] for g in gt]
+            dt = [d["segmentation"] for d in dt]
         elif p.iouType == "bbox":
-            g = [g["bbox"] for g in gt]
-            d = [d["bbox"] for d in dt]
+            gt = [g["bbox"] for g in gt]
+            dt = [d["bbox"] for d in dt]
         else:
             raise ValueError("Unknown iouType for iou computation")
 
         # areas for each mask
-        gt_areas = np.array([mask_util.area(g) for g in g])
-        dt_areas = np.array([mask_util.area(d) for d in d])
+        gt_areas = np.array([mask_util.area(g) for g in gt])
+        dt_areas = np.array([mask_util.area(d) for d in dt])
 
         iscrowd = [int(o["iscrowd"]) for o in gt]
 
         # compute IoMean = intersection / mean(area_gt, area_dt)
-        inter_area = mask_util.iou(d, g, iscrowd) * (
-            dt_areas[:, None] + gt_areas[None, :] - mask_util.iou(d, g, iscrowd)
+        inter_area = mask_util.iou(dt, gt, iscrowd) * (
+            dt_areas[:, None]
+            + gt_areas[None, :]
+            - mask_util.iou(dt, gt, iscrowd)
         )
         mean_area = 0.5 * (dt_areas[:, None] + gt_areas[None, :])
         return inter_area / np.maximum(mean_area, 1e-10)
