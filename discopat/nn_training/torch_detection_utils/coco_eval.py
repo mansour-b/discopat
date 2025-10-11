@@ -11,19 +11,62 @@ from pycocotools.cocoeval import COCOeval
 from .utils import all_gather
 
 
+class COCOevalIoMean(COCOeval):
+    """Replace IoU by IoMean."""
+
+    def computeIoU(self, imgId, catId):
+        return self.computeIoMean(imgId, catId)
+
+    def computeIoMean(self, imgId, catId):
+        p = self.params
+        if p.useCats:
+            gt = self._gts[imgId, catId]
+            dt = self._dts[imgId, catId]
+        else:
+            gt = [_ for cId in p.catIds for _ in self._gts[imgId, cId]]
+            dt = [_ for cId in p.catIds for _ in self._dts[imgId, cId]]
+        if len(gt) == 0 and len(dt) == 0:
+            return []
+        inds = np.argsort([-d["score"] for d in dt], kind="mergesort")
+        dt = [dt[i] for i in inds]
+        if len(dt) > p.maxDets[-1]:
+            dt = dt[0 : p.maxDets[-1]]
+
+        if p.iouType == "segm":
+            g = [g["segmentation"] for g in gt]
+            d = [d["segmentation"] for d in dt]
+        elif p.iouType == "bbox":
+            g = [g["bbox"] for g in gt]
+            d = [d["bbox"] for d in dt]
+        else:
+            raise ValueError("Unknown iouType for iou computation")
+
+        # areas for each mask
+        gt_areas = np.array([mask_util.area(g) for g in g])
+        dt_areas = np.array([mask_util.area(d) for d in d])
+
+        iscrowd = [int(o["iscrowd"]) for o in gt]
+
+        # compute IoMean = intersection / mean(area_gt, area_dt)
+        inter_area = mask_util.iou(d, g, iscrowd) * (
+            dt_areas[:, None] + gt_areas[None, :] - mask_util.iou(d, g, iscrowd)
+        )
+        mean_area = 0.5 * (dt_areas[:, None] + gt_areas[None, :])
+        return inter_area / np.maximum(mean_area, 1e-10)
+
+
 class CocoEvaluator:
     def __init__(self, coco_gt, iou_types):
         if not isinstance(iou_types, (list, tuple)):
-            raise TypeError(
-                f"This constructor expects iou_types of type list or tuple, instead  got {type(iou_types)}"
-            )
+            msg = f"This constructor expects iou_types of type list or tuple, instead  got {type(iou_types)}"
+            raise TypeError(msg)
         coco_gt = copy.deepcopy(coco_gt)
         self.coco_gt = coco_gt
 
         self.iou_types = iou_types
         self.coco_eval = {}
         for iou_type in iou_types:
-            coco_eval = COCOeval(coco_gt, iouType=iou_type)
+            coco_eval = COCOevalIoMean(coco_gt, iouType=iou_type)
             num_keypoints = 3
             coco_eval.params.kpt_oks_sigmas = np.full(
                 num_keypoints, fill_value=0.05

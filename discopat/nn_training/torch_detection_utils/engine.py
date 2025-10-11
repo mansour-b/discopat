@@ -2,59 +2,12 @@ import math
 import sys
 import time
 
-import numpy as np
-import pycocotools.mask as maskUtils
 import torch
 import torchvision.models.detection.mask_rcnn
-from pycocotools.cocoeval import COCOeval
 
 from .coco_eval import CocoEvaluator
 from .coco_utils import get_coco_api_from_dataset
 from .utils import MetricLogger, SmoothedValue, reduce_dict
-
-
-class COCOevalIoMean(COCOeval):
-    """Replace IoU by IoMean."""
-
-    def computeIoU(self, imgId, catId):
-        return self.computeIoMean(imgId, catId)
-
-    def computeIoMean(self, imgId, catId):
-        p = self.params
-        if p.useCats:
-            gt = self._gts[imgId, catId]
-            dt = self._dts[imgId, catId]
-        else:
-            gt = [_ for cId in p.catIds for _ in self._gts[imgId, cId]]
-            dt = [_ for cId in p.catIds for _ in self._dts[imgId, cId]]
-        if len(gt) == 0 and len(dt) == 0:
-            return []
-        inds = np.argsort([-d["score"] for d in dt], kind="mergesort")
-        dt = [dt[i] for i in inds]
-        if len(dt) > p.maxDets[-1]:
-            dt = dt[0 : p.maxDets[-1]]
-
-        if p.iouType == "segm":
-            g = [g["segmentation"] for g in gt]
-            d = [d["segmentation"] for d in dt]
-        elif p.iouType == "bbox":
-            g = [g["bbox"] for g in gt]
-            d = [d["bbox"] for d in dt]
-        else:
-            raise ValueError("Unknown iouType for iou computation")
-
-        # areas for each mask
-        gt_areas = np.array([maskUtils.area(g) for g in g])
-        dt_areas = np.array([maskUtils.area(d) for d in d])
-
-        iscrowd = [int(o["iscrowd"]) for o in gt]
-
-        # compute IoMean = intersection / mean(area_gt, area_dt)
-        inter_area = maskUtils.iou(d, g, iscrowd) * (
-            dt_areas[:, None] + gt_areas[None, :] - maskUtils.iou(d, g, iscrowd)
-        )
-        mean_area = 0.5 * (dt_areas[:, None] + gt_areas[None, :])
-        return inter_area / np.maximum(mean_area, 1e-10)
 
 
 def train_one_epoch(
