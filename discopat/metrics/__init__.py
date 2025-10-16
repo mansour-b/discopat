@@ -18,8 +18,8 @@ def compute_iou(box1: list, box2: list, eps: float = 1e-10) -> float:
 
     """
     xmin_max = max(box1[0], box2[0])
-    xmax_min = min(box1[1], box2[1])
-    ymin_max = max(box1[2], box2[2])
+    xmax_min = min(box1[2], box2[2])
+    ymin_max = max(box1[1], box2[1])
     ymax_min = min(box1[3], box2[3])
 
     intersection_area = max(xmax_min - xmin_max, 0) * max(
@@ -75,6 +75,10 @@ def compute_ap_at_threshold(
     # Cumulative sums
     tp_cum = np.cumsum(tps)
     fp_cum = np.cumsum(fps)
+
+    # Prepend zeros for the case score_threshold=1
+    tp_cum = np.concatenate([[0], tp_cum])
+    fp_cum = np.concatenate([[0], fp_cum])
 
     recall = tp_cum / len(groundtruths)
     precision = tp_cum / (tp_cum + fp_cum + 1e-10)
