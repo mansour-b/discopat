@@ -24,7 +24,7 @@ def compute_iou(box1: list, box2: list, eps: float = 1e-10) -> float:
     return intersection_area / max(union_area, eps)
 
 
-def compute_iou_matrix(groundtruths, predictions):
+def compute_iou_matrix(groundtruths: list, predictions: list) -> list:
     """Compute IoU matrix between groundtruths and predictions.
 
     Args:
@@ -35,6 +35,7 @@ def compute_iou_matrix(groundtruths, predictions):
         A matrix where every columns corresponds to a groundtruth, every row to a prediction, and the coefficient at (i, j) is the iou between predictions[i] and groundtruth[j].
 
     """
+    return [[compute_iou(g, p) for g in groundtruths] for p in predictions]
 
 
 def compute_ap(groundtruths: list, predictions: list) -> float:
