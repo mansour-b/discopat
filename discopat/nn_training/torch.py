@@ -16,12 +16,14 @@ class TorchNNTrainer(NNTrainer):
                 self.net,
                 self.optimiser,
                 self.dataset,
-                self._concrete_device,
+                self.device,
                 epoch,
                 print_freq=print_frequency,
             )
             self.lr_scheduler.step()
-            evaluate(self.net, self.val_dataset, device=self._concrete_device)
+            evaluate(self.net, self.val_dataset, device=self.device)
+            for callback in self.callbacks:
+                callback(self.net, self.device)
 
     def set_default_optimiser(self) -> torch.optim.Optimizer:
         net_params = [p for p in self.net.parameters() if p.requires_grad]
@@ -44,6 +46,7 @@ class TorchNNTrainer(NNTrainer):
         return {
             "cpu": torch.device("cpu"),
             "cuda": torch.device("cuda"),
+            "cuda:3": torch.device("cuda:3"),
             "gpu": torch.device("cuda"),
             "mps": torch.device("mps"),
         }[self.device]

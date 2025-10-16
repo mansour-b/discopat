@@ -39,7 +39,7 @@ def make_movie(
             plt.close(fig)
 
 
-def plot_frame(
+def plot_frame(  # noqa: RET503
     frame: Frame,
     cmap: str = "gray",
     annotation_color: str = "tab:red",
