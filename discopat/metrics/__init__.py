@@ -79,4 +79,4 @@ def compute_ap_at_threshold(
         precision.append(tp / (tp + fp))
         recall.append(tp / (tp + fn))
 
-    pass
+    return np.trapezoid(y=precision, x=recall)
