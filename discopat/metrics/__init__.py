@@ -1,4 +1,8 @@
+import logging
+
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def compute_iou(box1: list, box2: list, eps: float = 1e-10) -> float:
@@ -44,39 +48,40 @@ def compute_iou_matrix(groundtruths: list, predictions: list) -> list:
 def compute_ap_at_threshold(
     groundtruths: list, predictions: list, threshold: float
 ) -> float:
-    predictions.sort(key=lambda x: x[-1], reverse=True)
-    iou_matrix = compute_iou_matrix(groundtruths, predictions)
-    iou_matrix = np.sort(iou_matrix, axis=-1, reverse=True)
+    if len(groundtruths) == 0:
+        logger.warning("No groundtruth boxes.")
+        return 0.0
 
-    candidate_matrix = iou_matrix[iou_matrix >= threshold]
+    # Sort predictions by score descending
+    predictions = sorted(predictions, key=lambda x: x[-1], reverse=True)
+    pred_boxes = [p[:4] for p in predictions]
 
-    unmatched_preds = []
-    matches = {}
-    for pred in candidate_matrix:
-        matching_gts = np.argwhere(
-            np.delete(candidate_matrix[pred], matches.values())
-        )
-        if len(matching_gts) == 0:
-            unmatched_preds.append(pred)
-        matches[pred] = matching_gts[0]
-    unmatched_gts = np.delete(np.arange(len(groundtruths)), matches.values())
+    # Track matches
+    gt_matched = np.zeros(len(groundtruths), dtype=bool)
+    tps = np.zeros(len(predictions))
+    fps = np.zeros(len(predictions))
 
-    precision = []
-    recall = []
-    for i in matches:
-        tp = i + 1  # Matched preds wth score >= current prediction's
-        fp = len(
-            [
-                pred for pred in unmatched_gts if pred[-1] >= predictions[i][-1]
-            ]  # Unmatched preds with score >= current prediction's
-        )
-        fn = (
-            len(unmatched_gts)  # Unmatched gts
-            + (
-                len(matches) - i - 1
-            )  # Matched preds with score < current prediction's
-        )
-        precision.append(tp / (tp + fp))
-        recall.append(tp / (tp + fn))
+    for i, pred in enumerate(pred_boxes):
+        # Find best matching GT
+        ious = [compute_iou(pred, gt) for gt in groundtruths]
+        best_gt = int(np.argmax(ious))
+        best_iou = ious[best_gt]
+        if best_iou >= threshold and not gt_matched[best_gt]:
+            tps[i] = 1
+            gt_matched[best_gt] = True
+        else:
+            fps[i] = 1
 
-    return np.trapezoid(y=precision, x=recall)
+    # Cumulative sums
+    tp_cum = np.cumsum(tps)
+    fp_cum = np.cumsum(fps)
+
+    recall = tp_cum / len(groundtruths)
+    precision = tp_cum / (tp_cum + fp_cum + 1e-10)
+
+    # Ensure precision is non-increasing
+    for i in range(len(precision) - 1, 0, -1):
+        precision[i - 1] = max(precision[i - 1], precision[i])
+
+    # Compute area under curve (AP)
+    return np.trapezoid(precision, recall)
