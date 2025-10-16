@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def compute_iou(box1: list, box2: list, eps: float = 1e-10) -> float:
     """Compute IoU between two boxes.
 
@@ -38,5 +41,42 @@ def compute_iou_matrix(groundtruths: list, predictions: list) -> list:
     return [[compute_iou(g, p) for g in groundtruths] for p in predictions]
 
 
-def compute_ap(groundtruths: list, predictions: list) -> float:
+def compute_ap_at_threshold(
+    groundtruths: list, predictions: list, threshold: float
+) -> float:
+    predictions.sort(key=lambda x: x[-1], reverse=True)
     iou_matrix = compute_iou_matrix(groundtruths, predictions)
+    iou_matrix = np.sort(iou_matrix, axis=-1, reverse=True)
+
+    candidate_matrix = iou_matrix[iou_matrix >= threshold]
+
+    unmatched_preds = []
+    matches = {}
+    for pred in candidate_matrix:
+        matching_gts = np.argwhere(
+            np.delete(candidate_matrix[pred], matches.values())
+        )
+        if len(matching_gts) == 0:
+            unmatched_preds.append(pred)
+        matches[pred] = matching_gts[0]
+    unmatched_gts = np.delete(np.arange(len(groundtruths)), matches.values())
+
+    precision = []
+    recall = []
+    for i in matches:
+        tp = i + 1  # Matched preds wth score >= current prediction's
+        fp = len(
+            [
+                pred for pred in unmatched_gts if pred[-1] >= predictions[i][-1]
+            ]  # Unmatched preds with score >= current prediction's
+        )
+        fn = (
+            len(unmatched_gts)  # Unmatched gts
+            + (
+                len(matches) - i - 1
+            )  # Matched preds with score < current prediction's
+        )
+        precision.append(tp / (tp + fp))
+        recall.append(tp / (tp + fn))
+
+    pass
