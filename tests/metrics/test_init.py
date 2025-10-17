@@ -41,7 +41,12 @@ class TestMetrics:
         ],
     )
     def test_compute_ap50(self, groundtruths, predictions, expected):
-        ap50 = compute_ap(groundtruths, predictions, threshold=0.5)
+        ap50 = compute_ap(
+            groundtruths,
+            predictions,
+            threshold=0.5,
+            localization_criterion="iou",
+        )
         assert np.isclose(ap50, expected)
 
     @pytest.mark.parametrize(
@@ -60,5 +65,10 @@ class TestMetrics:
         predictions = [
             [i, i, i + 1 - 0.049 * i, i + 1, 0.9] for i in range(0, 12, 2)
         ]
-        ap = compute_ap(groundtruths, predictions, threshold=threshold)
+        ap = compute_ap(
+            groundtruths,
+            predictions,
+            threshold=threshold,
+            localization_criterion="iou",
+        )
         assert np.isclose(ap, expected)

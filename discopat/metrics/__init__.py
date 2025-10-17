@@ -31,6 +31,32 @@ def compute_iou(box1: list, box2: list, eps: float = 1e-10) -> float:
     return intersection_area / max(union_area, eps)
 
 
+def compute_iomean(box1: list, box2: list, eps: float = 1e-10) -> float:
+    """Compute IoMean between two boxes.
+
+    Args:
+        box1: [x1, y1, x2, y2, (score)],
+        box2: [x1, y1, x2, y2, (score)],
+        eps: Safety term for the denominator.
+
+    Returns:
+        The IoU (float).
+
+    """
+    xmin_max = max(box1[0], box2[0])
+    xmax_min = min(box1[2], box2[2])
+    ymin_max = max(box1[1], box2[1])
+    ymax_min = min(box1[3], box2[3])
+
+    intersection_area = max(xmax_min - xmin_max, 0) * max(
+        ymax_min - ymin_max, 0
+    )
+    box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
+    mean_area = box1_area + box2_area
+    return intersection_area / max(mean_area, eps)
+
+
 def compute_iou_matrix(groundtruths: list, predictions: list) -> list:
     """Compute IoU matrix between groundtruths and predictions.
 
@@ -46,11 +72,19 @@ def compute_iou_matrix(groundtruths: list, predictions: list) -> list:
 
 
 def compute_ap(
-    groundtruths: list, predictions: list, threshold: float
+    groundtruths: list,
+    predictions: list,
+    threshold: float,
+    localization_criterion: str,
 ) -> float:
+    """Average Precision (AP) at a given IoU/IoMean/whatever threshold."""
     if len(groundtruths) == 0:
         logger.warning("No groundtruth boxes.")
         return 0.0
+
+    localizing_function = {"iou": compute_iou, "iomean": compute_iomean}[
+        localization_criterion
+    ]
 
     # Sort predictions by score descending
     predictions = sorted(predictions, key=lambda x: x[-1], reverse=True)
@@ -63,7 +97,7 @@ def compute_ap(
 
     for i, pred in enumerate(pred_boxes):
         # Find best matching GT
-        ious = [compute_iou(pred, gt) for gt in groundtruths]
+        ious = [localizing_function(pred, gt) for gt in groundtruths]
         best_gt = int(np.argmax(ious))
         best_iou = ious[best_gt]
         if best_iou >= threshold and not gt_matched[best_gt]:
