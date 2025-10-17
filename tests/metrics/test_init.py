@@ -48,16 +48,18 @@ class TestMetrics:
         ("threshold", "expected"),
         [
             pytest.param(0.5, 1.0),
-            pytest.param(0.6, 1.0),
-            pytest.param(0.7, 1.0),
-            pytest.param(0.8, 1.0),
-            pytest.param(0.9, 1.0),
-            pytest.param(0.95, 1.0),
+            pytest.param(0.6, 5 / 6),
+            pytest.param(0.7, 2 / 3),
+            pytest.param(0.8, 1 / 2),
+            pytest.param(0.9, 1 / 3),
+            pytest.param(0.95, 1 / 6),
         ],
     )
-    def test_compute_ap_multiple_thresholds(self, threshold, expected):
-        groundtruths = [[0, 0, 1, 1], [2, 2, 3, 3]]
-        predictions = [[0, 0, 1, 1, 0.9], [2, 2, 3, 3, 0.5]]
+    def test_compute_ap_multiple_iou_thresholds(self, threshold, expected):
+        groundtruths = [[i, i, i + 1, i + 1] for i in range(0, 12, 2)]
+        predictions = [
+            [i, i, i + 1 - 0.049 * i, i + 1, 0.9] for i in range(0, 12, 2)
+        ]
         ap = compute_ap_at_threshold(
             groundtruths, predictions, threshold=threshold
         )
