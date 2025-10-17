@@ -53,7 +53,7 @@ def compute_iomean(box1: list, box2: list, eps: float = 1e-10) -> float:
     )
     box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
     box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
-    mean_area = box1_area + box2_area
+    mean_area = (box1_area + box2_area) / 2
     return intersection_area / max(mean_area, eps)
 
 

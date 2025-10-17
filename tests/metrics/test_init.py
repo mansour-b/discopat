@@ -1,10 +1,27 @@
 import numpy as np
 import pytest
 
-from discopat.metrics import compute_ap
+from discopat.metrics import compute_ap, compute_iomean, compute_iou
 
 
 class TestMetrics:
+    @pytest.mark.parametrize(
+        ("box1", "box2", "expected"),
+        [
+            pytest.param([0, 0, 1, 1], [0, 0, 1, 1], 1.0),
+            pytest.param([0, 0, 1, 1], [0.5, 0, 1.5, 1], 0.5),
+            pytest.param([0, 0, 1, 1], [0.5, 0.5, 1.5, 1.5], 0.25),
+            pytest.param([0, 0, 1, 1], [0, 0.5, 1, 1.5], 0.5),
+            pytest.param([0, 0, 1, 1], [-0.5, 0.5, 0.5, 1.5], 0.25),
+            pytest.param([0, 0, 1, 1], [-0.5, 0, 0.5, 1], 0.5),
+            pytest.param([0, 0, 1, 1], [-0.5, -0.5, 0.5, 0.5], 0.25),
+            pytest.param([0, 0, 1, 1], [0, -0.5, 1, 0.5], 0.5),
+            pytest.param([0, 0, 1, 1], [0.5, -0.5, 1.5, 0.5], 0.25),
+        ],
+    )
+    def test_compute_iomean(self, box1, box2, expected):
+        assert np.isclose(compute_iomean(box1, box2), expected)
+
     @pytest.mark.parametrize(
         ("groundtruths", "predictions", "expected"),
         [
