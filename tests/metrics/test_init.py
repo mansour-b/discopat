@@ -23,6 +23,23 @@ class TestMetrics:
         assert np.isclose(compute_iomean(box1, box2), expected)
 
     @pytest.mark.parametrize(
+        ("box1", "box2", "expected"),
+        [
+            pytest.param([0, 0, 1, 1], [0, 0, 1, 1], 1.0),
+            pytest.param([0, 0, 1, 1], [0.5, 0, 1.5, 1], 1 / 3),
+            pytest.param([0, 0, 1, 1], [0.5, 0.5, 1.5, 1.5], 1 / 7),
+            pytest.param([0, 0, 1, 1], [0, 0.5, 1, 1.5], 1 / 3),
+            pytest.param([0, 0, 1, 1], [-0.5, 0.5, 0.5, 1.5], 1 / 7),
+            pytest.param([0, 0, 1, 1], [-0.5, 0, 0.5, 1], 1 / 3),
+            pytest.param([0, 0, 1, 1], [-0.5, -0.5, 0.5, 0.5], 1 / 7),
+            pytest.param([0, 0, 1, 1], [0, -0.5, 1, 0.5], 1 / 3),
+            pytest.param([0, 0, 1, 1], [0.5, -0.5, 1.5, 0.5], 1 / 7),
+        ],
+    )
+    def test_compute_iou(self, box1, box2, expected):
+        assert np.isclose(compute_iou(box1, box2), expected)
+
+    @pytest.mark.parametrize(
         ("groundtruths", "predictions", "expected"),
         [
             pytest.param(
