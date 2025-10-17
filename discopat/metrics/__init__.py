@@ -45,7 +45,7 @@ def compute_iou_matrix(groundtruths: list, predictions: list) -> list:
     return [[compute_iou(g, p) for g in groundtruths] for p in predictions]
 
 
-def compute_ap_at_threshold(
+def compute_ap(
     groundtruths: list, predictions: list, threshold: float
 ) -> float:
     if len(groundtruths) == 0:
