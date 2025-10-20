@@ -50,7 +50,80 @@ def match_gts_and_preds(
     return len(groundtruths), zip(scores, tps)
 
 
-def evaluate(
-    model: NeuralNet, data_loader: DataLoader, device: ComputingDevice
-):
-    pass
+def compute_ap(
+    model: NeuralNet,
+    data_loader: DataLoader,
+    threshold: float,
+    localization_criterion: str,
+) -> float:
+    """Compute the Average Precision (AP) for a given localization threshold.
+
+    Args:
+        model: the neural network to be evaluated,
+        data_loader: the evaluation dataloader,
+        threshold: localization threshold,
+        localization_criterion: metric used to match groundtruths and preds.
+
+    Returns:
+        The AP.
+
+    """
+    num_groundtruths = 0
+    big_tp_vector = np.empty((0, 2))
+    for images, targets in data_loader:
+        outputs = model(images)
+        for target, output in zip(targets, outputs):
+            num_gts, tp_vector = match_gts_and_preds(
+                target["boxes"],
+                output["boxes"],
+                threshold=threshold,
+                localization_criterion=localization_criterion,
+            )
+            num_groundtruths += num_gts
+            big_tp_vector = np.concat((big_tp_vector, tp_vector))
+
+    # Sort the TP vector by decreasing prediction score over the whole dataset
+    big_tp_vector = np.array(
+        big_tp_vector, dtype=[("score", float), ("is_tp", float)]
+    )
+    big_tp_vector = np.sort(big_tp_vector, order="score")
+
+    # Cumulative sums
+    tp_cumulative = np.cumsum(tp_vector[:, 1])
+    fp_cumulative = np.cumsum(1 - tp_vector[:, 1])
+
+    # Prepend zeros for the case score_threshold=1
+    tp_cum = np.concatenate([[0], tp_cumulative])
+    fp_cum = np.concatenate([[0], fp_cumulative])
+
+    recall = tp_cum / num_groundtruths
+    precision = tp_cum / (tp_cum + fp_cum + 1e-10)
+
+    # Ensure precision is non-increasing
+    for i in range(len(precision) - 1, 0, -1):
+        precision[i - 1] = max(precision[i - 1], precision[i])
+
+    # Compute area under curve (AP)
+    return np.trapezoid(precision, recall)
+
+
+def evaluate(model: NeuralNet, data_loader: DataLoader) -> dict[str, float]:
+    """Evaluate a model on a data loader.
+
+    Args:
+        model: the neural network to be evaluated,
+        data_loader: the evaluation dataloader,
+
+    Returns:
+        A dict containing the name and values of the following metrics:
+        AP50, AP75, AP[50:95:05].
+
+    """
+    summary_list = []
+    for images, targets in data_loader:
+        outputs = model(images)
+        for target, output in zip(targets, outputs):
+            summary_list.append(
+                target,
+                output,
+            )
