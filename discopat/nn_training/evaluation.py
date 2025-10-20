@@ -47,7 +47,7 @@ def match_gts_and_preds(
             tps[i] = 1
             gt_matched[best_gt] = True
 
-    return len(groundtruths), zip(scores, tps)
+    return len(groundtruths), list(zip(scores, tps))
 
 
 def compute_ap(
