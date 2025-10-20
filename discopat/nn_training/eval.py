@@ -1,7 +1,7 @@
 import numpy as np
 from torch.utils.data import DataLoader
 
-from discopat.core import ComputingDevice, NeuralNet
+from discopat.core import NeuralNet
 from discopat.metrics import compute_iomean, compute_iou
 
 
@@ -107,23 +107,28 @@ def compute_ap(
     return np.trapezoid(precision, recall)
 
 
-def evaluate(model: NeuralNet, data_loader: DataLoader) -> dict[str, float]:
+def evaluate(
+    model: NeuralNet, data_loader: DataLoader, localization_criterion: str
+) -> dict[str, float]:
     """Evaluate a model on a data loader.
 
     Args:
         model: the neural network to be evaluated,
         data_loader: the evaluation dataloader,
+        localization_criterion: metric used for GT-pred matching.
 
     Returns:
         A dict containing the name and values of the following metrics:
-        AP50, AP75, AP[50:95:05].
+        AP50, AP[50:95:05].
 
     """
-    summary_list = []
-    for images, targets in data_loader:
-        outputs = model(images)
-        for target, output in zip(targets, outputs):
-            summary_list.append(
-                target,
-                output,
-            )
+    ap_dict = {
+        f"AP{int(100 * threshold)}": compute_ap(
+            model,
+            data_loader,
+            threshold=threshold,
+            localization_criterion=localization_criterion,
+        )
+        for threshold in [0.5, 1.0, 0.05]
+    }
+    return {"AP50": ap_dict["AP50"], "AP": np.mean(ap_dict.values())}
