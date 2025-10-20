@@ -10,7 +10,7 @@ def match_gts_and_preds(
     predictions: list,
     threshold: float,
     localization_criterion: str,
-) -> tuple[int, list[tuple(float, float)]]:
+) -> tuple[int, list[tuple[float, float]]]:
     """Match GTs and preds on an image in the dataset.
 
     Args:
