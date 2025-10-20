@@ -40,7 +40,7 @@ def compute_iomean(box1: list, box2: list, eps: float = 1e-10) -> float:
         eps: Safety term for the denominator.
 
     Returns:
-        The IoU (float).
+        The IoMean (float).
 
     """
     xmin_max = max(box1[0], box2[0])
@@ -97,10 +97,10 @@ def compute_ap(
 
     for i, pred in enumerate(pred_boxes):
         # Find best matching GT
-        ious = [localizing_function(pred, gt) for gt in groundtruths]
-        best_gt = int(np.argmax(ious))
-        best_iou = ious[best_gt]
-        if best_iou >= threshold and not gt_matched[best_gt]:
+        loc_scores = [localizing_function(pred, gt) for gt in groundtruths]
+        best_gt = int(np.argmax(loc_scores))
+        best_loc = loc_scores[best_gt]
+        if best_loc >= threshold and not gt_matched[best_gt]:
             tps[i] = 1
             gt_matched[best_gt] = True
         else:

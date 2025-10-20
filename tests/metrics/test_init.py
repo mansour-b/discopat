@@ -42,21 +42,10 @@ class TestMetrics:
     @pytest.mark.parametrize(
         ("groundtruths", "predictions", "expected"),
         [
-            pytest.param(
-                [[0, 0, 1, 1]],
-                [[0, 0, 1, 1, 0.9]],
-                1.0,
-            ),
-            pytest.param(
-                [[0, 0, 1, 1]],
-                [[0, 0, 0.5, 1, 0.9]],
-                1.0,
-            ),
-            pytest.param(
-                [[0, 0, 1, 1]],
-                [[0, 0, 0.4, 1, 0.9]],
-                0.0,
-            ),
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 1, 1, 0.9]], 1.0),
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 0.5, 1, 0.9]], 1.0),
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 1 / 3, 1, 0.9]], 0.0),
+            pytest.param([[0, 0, 1, 1]], [[0.4, 0, 1.4, 1, 0.9]], 0.0),
             pytest.param(
                 [[0, 0, 1, 1], [2, 2, 3, 3]],
                 [[0, 0, 1, 1, 0.9], [2, 2, 3, 3, 0.8]],
@@ -74,12 +63,32 @@ class TestMetrics:
             ),
         ],
     )
-    def test_compute_ap50(self, groundtruths, predictions, expected):
+    def test_compute_ap50_iou(self, groundtruths, predictions, expected):
         ap50 = compute_ap(
             groundtruths,
             predictions,
             threshold=0.5,
             localization_criterion="iou",
+        )
+        assert np.isclose(ap50, expected)
+
+    @pytest.mark.parametrize(
+        ("groundtruths", "predictions", "expected"),
+        [
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 1, 1, 0.9]], 1.0),
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 0.5, 1, 0.9]], 1.0),
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 0.4, 1, 0.9]], 1.0),
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 0.333, 1, 0.9]], 0.0),
+            pytest.param([[0, 0, 1, 1]], [[0, 0, 1 / 3, 1, 0.9]], 1.0),
+            pytest.param([[0, 0, 1, 1]], [[0.4, 0, 1.4, 1, 0.9]], 1.0),
+        ],
+    )
+    def test_compute_ap50_iomean(self, groundtruths, predictions, expected):
+        ap50 = compute_ap(
+            groundtruths,
+            predictions,
+            threshold=0.5,
+            localization_criterion="iomean",
         )
         assert np.isclose(ap50, expected)
 
