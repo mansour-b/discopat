@@ -1,6 +1,6 @@
 from typing import Self
 
-from dsicopat.nn_training.eval import evaluate
+from dsicopat.nn_training.evaluation import evaluate
 
 from discopat.core import ComputingDevice, Frame, Model
 
