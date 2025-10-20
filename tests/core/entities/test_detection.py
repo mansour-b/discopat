@@ -19,6 +19,12 @@ class TestModel:
     @staticmethod
     def make_model():
         class DumbModel(Model):
+            def pre_process(self):
+                pass
+
+            def post_process(self):
+                pass
+
             def predict(self, frame: Frame) -> Frame:
                 return frame
 
