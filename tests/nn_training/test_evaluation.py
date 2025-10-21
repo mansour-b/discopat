@@ -153,12 +153,12 @@ class TestEval:
     @pytest.mark.parametrize(
         ("groundtruths", "predictions", "localization_criterion", "expected"),
         [
-            # pytest.param([[]], [np.empty((0, 5))], "iou", {"AP50": 0, "AP": 0}),
+            pytest.param([[]], [np.empty((0, 5))], "iou", {"AP50": 0, "AP": 0}),
             pytest.param(
-                [[0, 0, 1, 1]],
+                [np.array([[0, 0, 1, 1]])],
                 [np.array([[0, 0, 1, 1, 0.9]])],
                 "iou",
-                {"AP50": 0, "AP": 0},
+                {"AP50": 1, "AP": 1},
             ),
         ],
     )
@@ -168,4 +168,7 @@ class TestEval:
         model = self.make_model(predictions)
         data_loader = self.make_data_loader(groundtruths)
         res = evaluate(model, data_loader, localization_criterion)
-        assert evaluate(model, data_loader, localization_criterion) == expected
+        assert res.keys() == expected.keys()
+        assert np.allclose(
+            [res[k] for k in res], [expected[k] for k in expected]
+        )
