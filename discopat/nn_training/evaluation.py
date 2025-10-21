@@ -8,6 +8,7 @@ from discopat.metrics import compute_iomean, compute_iou
 def match_gts_and_preds(
     groundtruths: list,
     predictions: list,
+    scores: list,
     threshold: float,
     localization_criterion: str,
 ) -> tuple[int, list[tuple[float, float]]]:
@@ -15,7 +16,8 @@ def match_gts_and_preds(
 
     Args:
         groundtruths: list of groundtruths, boxes [x1, y1, x2, y2],
-        predictions: list of predictions, boxes [x1, y1, x2, y2, score],
+        predictions: list of predictions, boxes [x1, y1, x2, y2],
+        scores: list of confidence score, same length as predictions
         threshold: threshold for the localization metric,
         localization_criterion: metric used to assess the fit between GTs and preds.
 
@@ -30,15 +32,17 @@ def match_gts_and_preds(
     ]
 
     # Sort predictions by score descending
-    predictions = sorted(predictions, key=lambda x: x[-1], reverse=True)
-    pred_boxes = [p[:4] for p in predictions]
-    scores = [p[-1] for p in predictions]
+    predictions = np.array(predictions)
+    scores = np.array(scores)
+    order = np.argsort(-scores)
+    predictions = predictions[order]
+    scores = scores[order]
 
     # Track matches
     gt_matched = np.zeros(len(groundtruths), dtype=bool)
     tps = np.zeros(len(predictions))
 
-    for i, pred in enumerate(pred_boxes):
+    for i, pred in enumerate(predictions):
         # Find best matching GT
         loc_scores = [localizing_function(pred, gt) for gt in groundtruths]
         best_gt = int(np.argmax(loc_scores))
@@ -74,14 +78,14 @@ def compute_ap(
         outputs = model(images)
         for target, output in zip(targets, outputs):
             num_gts, tp_vector = match_gts_and_preds(
-                target["boxes"],
-                output["boxes"],
+                groundtruths=target["boxes"],
+                predictions=output["boxes"],
+                scores=output["scores"],
                 threshold=threshold,
                 localization_criterion=localization_criterion,
             )
             num_groundtruths += num_gts
             big_tp_vector = np.concat((big_tp_vector, tp_vector))
-
     if num_groundtruths == 0:
         return 0
 

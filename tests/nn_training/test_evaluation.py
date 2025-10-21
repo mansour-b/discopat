@@ -141,9 +141,12 @@ class TestEval:
         localization_criterion,
         expected,
     ):
+        boxes = [p[:4] for p in predictions]
+        scores = [p[-1] for p in predictions]
         num_groundtruths, tp_vector = match_gts_and_preds(
             groundtruths,
-            predictions,
+            boxes,
+            scores,
             threshold,
             localization_criterion,
         )
@@ -157,6 +160,12 @@ class TestEval:
             pytest.param(
                 [np.array([[0, 0, 1, 1]])],
                 [np.array([[0, 0, 1, 1, 0.9]])],
+                "iou",
+                {"AP50": 1, "AP": 1},
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[0, 0, 1, 1]])],
+                [np.array([[0, 0, 1, 1, 0.9]]), np.array([[0, 0, 1, 1, 0.9]])],
                 "iou",
                 {"AP50": 1, "AP": 1},
             ),
