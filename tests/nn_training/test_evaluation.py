@@ -169,6 +169,24 @@ class TestEval:
                 "iou",
                 {"AP50": 1, "AP": 1},
             ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
+                [
+                    np.array([[0, 0, 1, 1, 0.9]]),
+                    np.array([[2, 2, 2.4, 3, 0.9]]),
+                ],
+                "iou",
+                {"AP50": 0.5, "AP": 0.5},
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
+                [
+                    np.array([[0, 0, 1, 1, 0.9]]),
+                    np.array([[2, 2, 2.4, 3, 0.9]]),
+                ],
+                "iomean",
+                {"AP50": 1, "AP": 0.6},
+            ),
         ],
     )
     def test_evaluate(

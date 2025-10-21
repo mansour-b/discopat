@@ -133,6 +133,6 @@ def evaluate(
             threshold=threshold,
             localization_criterion=localization_criterion,
         )
-        for threshold in [0.5, 1.0, 0.05]
+        for threshold in np.arange(0.5, 1.0, 0.05)
     }
     return {"AP50": ap_dict["AP50"], "AP": np.mean(list(ap_dict.values()))}
