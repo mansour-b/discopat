@@ -47,7 +47,7 @@ def match_gts_and_preds(
             tps[i] = 1
             gt_matched[best_gt] = True
 
-    return len(groundtruths), list(zip(scores, tps))
+    return len(groundtruths), np.array(list(zip(scores, tps))).reshape(-1, 2)
 
 
 def compute_ap(
@@ -81,6 +81,9 @@ def compute_ap(
             )
             num_groundtruths += num_gts
             big_tp_vector = np.concat((big_tp_vector, tp_vector))
+
+    if num_groundtruths == 0:
+        return 0
 
     # Sort the TP vector by decreasing prediction score over the whole dataset
     big_tp_vector = np.array(
@@ -131,4 +134,4 @@ def evaluate(
         )
         for threshold in [0.5, 1.0, 0.05]
     }
-    return {"AP50": ap_dict["AP50"], "AP": np.mean(ap_dict.values())}
+    return {"AP50": ap_dict["AP50"], "AP": np.mean(list(ap_dict.values()))}
