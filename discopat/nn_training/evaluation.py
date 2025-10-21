@@ -90,14 +90,11 @@ def compute_ap(
         return 0
 
     # Sort the TP vector by decreasing prediction score over the whole dataset
-    big_tp_vector = np.array(
-        big_tp_vector, dtype=[("score", float), ("is_tp", float)]
-    )
-    big_tp_vector = np.sort(big_tp_vector, order="score")
+    big_tp_vector = big_tp_vector[np.argsort(-big_tp_vector[:, 0])]
 
     # Cumulative sums
-    tp_cumulative = np.cumsum(tp_vector[:, 1])
-    fp_cumulative = np.cumsum(1 - tp_vector[:, 1])
+    tp_cumulative = np.cumsum(big_tp_vector[:, 1])
+    fp_cumulative = np.cumsum(1 - big_tp_vector[:, 1])
 
     # Prepend zeros for the case score_threshold=1
     tp_cum = np.concatenate([[0], tp_cumulative])
