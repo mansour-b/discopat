@@ -1,7 +1,6 @@
 import numpy as np
-from torch.utils.data import DataLoader
 
-from discopat.core import NeuralNet
+from discopat.core import DataLoader, NeuralNet
 from discopat.metrics import compute_iomean, compute_iou
 
 

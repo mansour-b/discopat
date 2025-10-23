@@ -1,6 +1,6 @@
 from discopat.core.entities.annotation import Annotation, Box, Keypoint, Track
 from discopat.core.entities.array import Array
-from discopat.core.entities.dataset import Dataset
+from discopat.core.entities.data import DataLoader, Dataset
 from discopat.core.entities.detection import CDModel, Model, NeuralNet, NNModel
 from discopat.core.entities.frame import Frame
 from discopat.core.entities.movie import Movie
@@ -12,6 +12,7 @@ __all__ = [
     "Box",
     "CDModel",
     "ComputingDevice",
+    "DataLoader",
     "DataSource",
     "Dataset",
     "Frame",
