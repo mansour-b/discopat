@@ -1,6 +1,6 @@
 import numpy as np
 
-from discopat.core import DataLoader, NeuralNet
+from discopat.core import ComputingDevice, DataLoader, NeuralNet
 from discopat.metrics import compute_iomean, compute_iou
 
 
@@ -58,6 +58,7 @@ def compute_ap(
     data_loader: DataLoader,
     threshold: float,
     localization_criterion: str,
+    device: ComputingDevice,
 ) -> float:
     """Compute the Average Precision (AP) for a given localization threshold.
 
@@ -65,7 +66,8 @@ def compute_ap(
         model: the neural network to be evaluated,
         data_loader: the evaluation dataloader,
         threshold: localization threshold,
-        localization_criterion: metric used to match groundtruths and preds.
+        localization_criterion: metric used to match groundtruths and preds,
+        device: computing device on which the model is stored.
 
     Returns:
         The AP.
@@ -73,8 +75,10 @@ def compute_ap(
     """
     num_groundtruths = 0
     big_tp_vector = np.empty((0, 2))
-    for images, targets in data_loader:
+    for imgs, targets in data_loader:
+        images = [img.to(device).float() for img in imgs]
         outputs = model(images)
+        outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
         for target, output in zip(targets, outputs):
             num_gts, tp_vector = match_gts_and_preds(
                 groundtruths=target["boxes"],
@@ -111,14 +115,18 @@ def compute_ap(
 
 
 def evaluate(
-    model: NeuralNet, data_loader: DataLoader, localization_criterion: str
+    model: NeuralNet,
+    data_loader: DataLoader,
+    localization_criterion: str,
+    device: ComputingDevice,
 ) -> dict[str, float]:
     """Evaluate a model on a data loader.
 
     Args:
         model: the neural network to be evaluated,
         data_loader: the evaluation dataloader,
-        localization_criterion: metric used for GT-pred matching.
+        localization_criterion: metric used for GT-pred matching,
+        device: computing device on which the model is stored.
 
     Returns:
         A dict containing the name and values of the following metrics:
@@ -132,6 +140,7 @@ def evaluate(
             data_loader,
             threshold=threshold,
             localization_criterion=localization_criterion,
+            device=device,
         )
         for threshold in np.arange(0.5, 1.0, 0.05)
     }
