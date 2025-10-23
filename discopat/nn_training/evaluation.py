@@ -125,6 +125,7 @@ def evaluate(
         AP50, AP[50:95:05].
 
     """
+    model.eval()
     ap_dict = {
         f"AP{int(100 * threshold)}": compute_ap(
             model,
