@@ -3,7 +3,11 @@ import pytest
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from discopat.nn_training.evaluation import evaluate, match_gts_and_preds
+from discopat.nn_training.evaluation import (
+    compute_ap,
+    evaluate,
+    match_gts_and_preds,
+)
 
 
 class TestEval:
@@ -152,6 +156,97 @@ class TestEval:
         )
         assert num_groundtruths == expected[0]
         assert np.allclose(tp_vector, expected[1])
+
+    @pytest.mark.parametrize(
+        (
+            "groundtruths",
+            "predictions",
+            "threshold",
+            "localization_criterion",
+            "expected",
+        ),
+        [
+            pytest.param([[]], [np.empty((0, 5))], 0.5, "iou", 0),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]])],
+                [np.array([[0, 0, 1, 1, 0.9]])],
+                0.5,
+                "iou",
+                1,
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[0, 0, 1, 1]])],
+                [np.array([[0, 0, 1, 1, 0.9]]), np.array([[0, 0, 1, 1, 0.9]])],
+                0.5,
+                "iou",
+                1,
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
+                [
+                    np.array([[0, 0, 1, 1, 0.9]]),
+                    np.array([[2, 2, 2.4, 3, 0.9]]),
+                ],
+                0.5,
+                "iou",
+                0.5,
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
+                [
+                    np.array([[0, 0, 1, 1, 0.9]]),
+                    np.array([[2, 2, 2.4, 3, 0.9]]),
+                ],
+                0.5,
+                "iomean",
+                1,
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
+                [
+                    np.array([[0, 0, 1, 1, 0.9]]),
+                    np.array([[2, 2, 2.4, 3, 0.9]]),
+                ],
+                0.6,
+                "iomean",
+                0.5,
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
+                [
+                    np.array([[0, 0, 1, 1, 0.9]]),
+                    np.array([[2, 2, 2.5, 3, 0.9]]),
+                ],
+                0.6,
+                "iomean",
+                1,
+            ),
+            pytest.param(
+                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
+                [
+                    np.array([[0, 0, 1, 1, 0.9]]),
+                    np.array([[2, 2, 2.5, 3, 0.9]]),
+                ],
+                0.7,
+                "iomean",
+                0.5,
+            ),
+        ],
+    )
+    def test_compute_ap(
+        self,
+        groundtruths,
+        predictions,
+        threshold,
+        localization_criterion,
+        expected,
+    ):
+        model = self.make_model(predictions)
+        data_loader = self.make_data_loader(groundtruths)
+        assert np.isclose(
+            compute_ap(model, data_loader, threshold, localization_criterion),
+            expected,
+        )
 
     @pytest.mark.parametrize(
         ("groundtruths", "predictions", "localization_criterion", "expected"),
