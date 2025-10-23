@@ -93,7 +93,6 @@ def compute_ap(
     # Track matches
     gt_matched = np.zeros(len(groundtruths), dtype=bool)
     tps = np.zeros(len(predictions))
-    fps = np.zeros(len(predictions))
 
     for i, pred in enumerate(pred_boxes):
         # Find best matching GT
@@ -103,8 +102,7 @@ def compute_ap(
         if best_loc >= threshold and not gt_matched[best_gt]:
             tps[i] = 1
             gt_matched[best_gt] = True
-        else:
-            fps[i] = 1
+    fps = 1 - tps
 
     # Cumulative sums
     tp_cum = np.cumsum(tps)
