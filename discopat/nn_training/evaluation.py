@@ -4,6 +4,13 @@ from discopat.core import ComputingDevice, DataLoader, NeuralNet
 from discopat.metrics import compute_iomean, compute_iou
 
 
+def to_np_array(list_or_tensor) -> np.array:
+    """Cast to numpy array."""
+    if type(list_or_tensor) is list:
+        return np.array(list_or_tensor)
+    return list_or_tensor.detach().numpy()
+
+
 def match_gts_and_preds(
     groundtruths: list,
     predictions: list,
@@ -31,8 +38,8 @@ def match_gts_and_preds(
     ]
 
     # Sort predictions by score descending
-    predictions = np.array(predictions)
-    scores = np.array(scores)
+    predictions = to_np_array(predictions)
+    scores = to_np_array(scores)
     order = np.argsort(-scores)
     predictions = predictions[order]
     scores = scores[order]
