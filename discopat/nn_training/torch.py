@@ -1,10 +1,8 @@
 import torch
 
+from discopat.nn_training.evaluation import evaluate
 from discopat.nn_training.nn_trainer import NNTrainer
-from discopat.nn_training.torch_detection_utils.engine import (
-    evaluate,
-    train_one_epoch,
-)
+from discopat.nn_training.torch_detection_utils.engine import train_one_epoch
 
 
 class TorchNNTrainer(NNTrainer):
@@ -21,7 +19,12 @@ class TorchNNTrainer(NNTrainer):
                 print_freq=print_frequency,
             )
             self.lr_scheduler.step()
-            evaluate(self.net, self.val_dataset, device=self.device)
+            evaluate(
+                self.net,
+                self.val_dataset,
+                localization_criterion="iomean",
+                device=self.device,
+            )
             for callback in self.callbacks:
                 callback(self.net, self.device)
 
