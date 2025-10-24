@@ -1,12 +1,10 @@
-import time
-
 import numpy as np
 
 from discopat.core import Array, ComputingDevice, DataLoader, NeuralNet
 from discopat.metrics import compute_iomean, compute_iou
 
 
-def to_np_array(list_or_tensor) -> np.array:
+def to_np_array(list_or_tensor: Array) -> np.array:
     """Cast to numpy array."""
     if type(list_or_tensor) is list:
         return np.array(list_or_tensor)
@@ -82,17 +80,10 @@ def compute_ap(
         The AP.
 
     """
-    print("===")
-    print(f"Compute AP@{threshold:.2f}")
-    print()
     num_groundtruths = 0
     big_tp_vector = np.empty((0, 2))
     for _, targets in data_loader:
-        print("Start computing outputs...")
-        start = time.process_time()
         outputs = [prediction_dict[t["image_id"]] for t in targets]
-        end = time.process_time()
-        print(f"Done after {end - start:.2f} seconds.")
         outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
         for target, output in zip(targets, outputs):
             num_gts, tp_vector = match_gts_and_preds(
@@ -126,7 +117,6 @@ def compute_ap(
         precision[i - 1] = max(precision[i - 1], precision[i])
 
     # Compute area under curve (AP)
-    print()
     return np.trapezoid(precision, recall)
 
 
