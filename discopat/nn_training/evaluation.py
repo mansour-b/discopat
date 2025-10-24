@@ -1,6 +1,8 @@
+import time
+
 import numpy as np
 
-from discopat.core import ComputingDevice, DataLoader, NeuralNet
+from discopat.core import Array, ComputingDevice, DataLoader, NeuralNet
 from discopat.metrics import compute_iomean, compute_iou
 
 
@@ -61,7 +63,7 @@ def match_gts_and_preds(
 
 
 def compute_ap(
-    model: NeuralNet,
+    prediction_dict: dict[str, Array],
     data_loader: DataLoader,
     threshold: float,
     localization_criterion: str,
@@ -80,11 +82,17 @@ def compute_ap(
         The AP.
 
     """
+    print("===")
+    print(f"Compute AP@{threshold:.2f}")
+    print()
     num_groundtruths = 0
     big_tp_vector = np.empty((0, 2))
-    for imgs, targets in data_loader:
-        images = [img.to(device).float() for img in imgs]
-        outputs = model(images)
+    for _, targets in data_loader:
+        print("Start computing outputs...")
+        start = time.process_time()
+        outputs = [prediction_dict[t["image_id"]] for t in targets]
+        end = time.process_time()
+        print(f"Done after {end - start:.2f} seconds.")
         outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
         for target, output in zip(targets, outputs):
             num_gts, tp_vector = match_gts_and_preds(
@@ -118,6 +126,7 @@ def compute_ap(
         precision[i - 1] = max(precision[i - 1], precision[i])
 
     # Compute area under curve (AP)
+    print()
     return np.trapezoid(precision, recall)
 
 
@@ -141,9 +150,16 @@ def evaluate(
 
     """
     model.eval()
+    prediction_dict = {
+        t["image_id"]: pred
+        for images, targets in data_loader
+        for pred, t in zip(
+            model([img.to(device).float() for img in images]), targets
+        )
+    }
     ap_dict = {
         f"AP{int(100 * threshold)}": compute_ap(
-            model,
+            prediction_dict,
             data_loader,
             threshold=threshold,
             localization_criterion=localization_criterion,
