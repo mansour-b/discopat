@@ -13,36 +13,42 @@ def to_np_array(list_or_tensor: Array) -> np.array:
     return list_or_tensor.detach().numpy()
 
 
-def box_iou_matrix(preds, gts):
+def compute_iou_matrix(
+    groundtruths: np.array, predictions: np.array
+) -> np.array:
     """Compute IoU matrix between predicted and GT boxes (both [N, 4] arrays in xyxy format).
 
     Args:
-        preds: (N_pred, 4)
-        gts:   (N_gt, 4)
+        groundtruths: (N_gt, 4)
+        predictions: (N_pred, 4)
 
     Returns:
-        ious: (N_pred, N_gt) matrix of pairwise IoUs
+        (N_pred, N_gt) matrix of pairwise IoUs
 
     """
-    if len(preds) == 0 or len(gts) == 0:
-        return np.zeros((len(preds), len(gts)), dtype=np.float32)
+    if len(predictions) == 0 or len(groundtruths) == 0:
+        return np.zeros((len(predictions), len(groundtruths)), dtype=np.float32)
 
     # Pred boxes
     px1, py1, px2, py2 = (
-        preds[:, 0][:, None],
-        preds[:, 1][:, None],
-        preds[:, 2][:, None],
-        preds[:, 3][:, None],
+        predictions[:, 0][:, None],
+        predictions[:, 1][:, None],
+        predictions[:, 2][:, None],
+        predictions[:, 3][:, None],
     )
     # GT boxes
     gx1, gy1, gx2, gy2 = (
-        gts[:, 0][None, :],
-        gts[:, 1][None, :],
-        gts[:, 2][None, :],
-        gts[:, 3][None, :],
+        groundtruths[:, 0][None, :],
+        groundtruths[:, 1][None, :],
+        groundtruths[:, 2][None, :],
+        groundtruths[:, 3][None, :],
     )
 
-    # Intersection box
+    # Areas
+    area_p = (px2 - px1) * (py2 - py1)
+    area_g = (gx2 - gx1) * (gy2 - gy1)
+
+    # Intersection boxes
     inter_x1 = np.maximum(px1, gx1)
     inter_y1 = np.maximum(py1, gy1)
     inter_x2 = np.minimum(px2, gx2)
@@ -52,56 +58,80 @@ def box_iou_matrix(preds, gts):
     inter_h = np.clip(inter_y2 - inter_y1, a_min=0, a_max=None)
     inter_area = inter_w * inter_h
 
-    # Areas
-    area_p = (px2 - px1) * (py2 - py1)
-    area_g = (gx2 - gx1) * (gy2 - gy1)
-
     # Union
     union = area_p + area_g - inter_area
     return inter_area / np.clip(union, 1e-7, None)
 
 
-def box_iomean_matrix(preds, gts):
-    if len(preds) == 0 or len(gts) == 0:
-        return np.zeros((len(preds), len(gts)), dtype=np.float32)
+def compute_iomean_matrix(
+    groundtruths: np.array, predictions: np.array
+) -> np.array:
+    """Compute IoMean matrix between predicted and GT boxes (both [N, 4] arrays in xyxy format).
 
-    # Reuse intersection logic from IoU
-    iou = box_iou_matrix(preds, gts)
+    Args:
+        groundtruths: (N_gt, 4)
+        predictions: (N_pred, 4)
 
-    # To get IoMean, recompute areas
+    Returns:
+        (N_pred, N_gt) matrix of pairwise IoUs
+
+    """
+    if len(predictions) == 0 or len(groundtruths) == 0:
+        return np.zeros((len(predictions), len(groundtruths)), dtype=np.float32)
+
     px1, py1, px2, py2 = (
-        preds[:, 0][:, None],
-        preds[:, 1][:, None],
-        preds[:, 2][:, None],
-        preds[:, 3][:, None],
+        predictions[:, 0][:, None],
+        predictions[:, 1][:, None],
+        predictions[:, 2][:, None],
+        predictions[:, 3][:, None],
     )
     gx1, gy1, gx2, gy2 = (
-        gts[:, 0][None, :],
-        gts[:, 1][None, :],
-        gts[:, 2][None, :],
-        gts[:, 3][None, :],
+        groundtruths[:, 0][None, :],
+        groundtruths[:, 1][None, :],
+        groundtruths[:, 2][None, :],
+        groundtruths[:, 3][None, :],
     )
 
+    # Areas
     area_p = (px2 - px1) * (py2 - py1)
     area_g = (gx2 - gx1) * (gy2 - gy1)
-    inter_area = iou * (
-        area_p + area_g - iou * (area_p + area_g - (area_p + area_g))
-    )  # or recompute directly
 
+    # Intersection boxes
+    inter_x1 = np.maximum(px1, gx1)
+    inter_y1 = np.maximum(py1, gy1)
+    inter_x2 = np.minimum(px2, gx2)
+    inter_y2 = np.minimum(py2, gy2)
+
+    inter_w = np.clip(inter_x2 - inter_x1, a_min=0, a_max=None)
+    inter_h = np.clip(inter_y2 - inter_y1, a_min=0, a_max=None)
+    inter_area = inter_w * inter_h
+
+    # Mean
     mean_area = (area_p + area_g) / 2
     return inter_area / np.clip(mean_area, 1e-7, None)
 
 
-def box_center_distance_matrix(preds, gts):
-    """Compute pairwise Euclidean distance between box centers."""
-    if len(preds) == 0 or len(gts) == 0:
-        return np.zeros((len(preds), len(gts)), dtype=np.float32)
+def compute_center_distance_matrix(
+    groundtruths: np.array, predictions: np.array
+) -> np.array:
+    """Compute pairwise Euclidean distance between box centers.
+
+    Args:
+        groundtruths: (N_gt, 4)
+        predictions: (N_pred, 4)
+
+    Returns:
+        (N_pred, N_gt) matrix of pairwise center distances.
+
+    """
+    if len(predictions) == 0 or len(groundtruths) == 0:
+        return np.zeros((len(predictions), len(groundtruths)), dtype=np.float32)
 
     # Centers
-    pcx = ((preds[:, 0] + preds[:, 2]) / 2)[:, None]
-    pcy = ((preds[:, 1] + preds[:, 3]) / 2)[:, None]
-    gcx = ((gts[:, 0] + gts[:, 2]) / 2)[None, :]
-    gcy = ((gts[:, 1] + gts[:, 3]) / 2)[None, :]
+    pcx = ((predictions[:, 0] + predictions[:, 2]) / 2)[:, None]
+    pcy = ((predictions[:, 1] + predictions[:, 3]) / 2)[:, None]
+    gcx = ((groundtruths[:, 0] + groundtruths[:, 2]) / 2)[None, :]
+    gcy = ((groundtruths[:, 1] + groundtruths[:, 3]) / 2)[None, :]
 
     return np.sqrt((pcx - gcx) ** 2 + (pcy - gcy) ** 2)
 
@@ -113,14 +143,14 @@ def match_gts_and_preds(
     threshold: float,
     localization_criterion: str,
 ) -> tuple[int, list[tuple[float, float]]]:
-    """Match GTs and preds on an image in the dataset.
+    """Match GTs and predictions on an image in the dataset.
 
     Args:
         groundtruths: list of groundtruths, boxes [x1, y1, x2, y2],
         predictions: list of predictions, boxes [x1, y1, x2, y2],
         scores: list of confidence score, same length as predictions
         threshold: threshold for the localization metric,
-        localization_criterion: metric used to assess the fit between GTs and preds.
+        localization_criterion: metric used to assess the fit between GTs and predictions.
 
     Returns:
         A report for the considered image, containing:
@@ -128,9 +158,11 @@ def match_gts_and_preds(
             - For each pred, a tuple (score, is_tp).
 
     """
-    localizing_function = {"iou": compute_iou, "iomean": compute_iomean}[
-        localization_criterion
-    ]
+    localization_function = {
+        "iou": compute_iou_matrix,
+        "iomean": compute_iomean_matrix,
+        "center_distance": compute_center_distance_matrix,
+    }[localization_criterion]
 
     # Sort predictions by score descending
     predictions = to_np_array(predictions)
@@ -162,14 +194,14 @@ def make_localization_matrix(
     threshold: float,
     localization_criterion: str,
 ) -> Array:
-    """Compute IoU/IoMean/whatever matrix between GTs and preds on one sample.
+    """Compute IoU/IoMean/whatever matrix between GTs and predictions on one sample.
 
     Args:
         groundtruths: list of groundtruths, boxes [x1, y1, x2, y2],
         predictions: list of predictions, boxes [x1, y1, x2, y2],
         scores: list of confidence score, same length as predictions
         threshold: threshold for the localization metric,
-        localization_criterion: metric used to assess the fit between GTs and preds.
+        localization_criterion: metric used to assess the fit between GTs and predictions.
 
     Returns:
         A report for the considered image, containing:
@@ -201,7 +233,7 @@ def compute_ap(
         model: the neural network to be evaluated,
         data_loader: the evaluation dataloader,
         threshold: localization threshold,
-        localization_criterion: metric used to match groundtruths and preds,
+        localization_criterion: metric used to match groundtruths and predictions,
         device: computing device on which the model is stored.
 
     Returns:
