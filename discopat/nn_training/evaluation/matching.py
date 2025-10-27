@@ -36,6 +36,8 @@ def match_groundtruths_and_predictions(
         "center_distance": compute_center_distance_matrix,
     }[localization_criterion]
 
+    groundtruths = to_np_array(groundtruths)
+
     # Sort predictions by score descending
     predictions = to_np_array(predictions)
     scores = to_np_array(scores)

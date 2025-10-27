@@ -60,8 +60,8 @@ def compute_ap(
     big_tp_vector = big_tp_vector[np.argsort(-big_score_vector)]
 
     # Cumulative sums
-    tp_cumulative = np.cumsum(big_tp_vector[:, 1])
-    fp_cumulative = np.cumsum(1 - big_tp_vector[:, 1])
+    tp_cumulative = np.cumsum(big_tp_vector)
+    fp_cumulative = np.cumsum(1 - big_tp_vector)
 
     # Prepend zeros for the case score_threshold=1
     tp_cum = np.concatenate([[0], tp_cumulative])
