@@ -7,7 +7,7 @@ def to_np_array(list_or_tensor: Array) -> np.array:
     """Cast to numpy array."""
     if type(list_or_tensor) is list:
         return np.array(list_or_tensor)
-    return list_or_tensor.detach().numpy()
+    return list_or_tensor.detach().cpu().numpy()
 
 
 def match_groundtruths_and_predictions(
