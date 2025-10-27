@@ -14,7 +14,6 @@ def match_groundtruths_and_predictions(
     groundtruths: list,
     predictions: list,
     scores: list,
-    threshold: float,
     localization_criterion: str,
 ) -> dict[str, np.array]:
     """Match GTs and predictions on an image in the dataset.
@@ -23,7 +22,6 @@ def match_groundtruths_and_predictions(
         groundtruths: list of groundtruths, boxes [x1, y1, x2, y2],
         predictions: list of predictions, boxes [x1, y1, x2, y2],
         scores: list of confidence score, same length as predictions
-        threshold: threshold for the localization metric,
         localization_criterion: metric used to assess the fit between GTs and predictions.
 
     Returns:
