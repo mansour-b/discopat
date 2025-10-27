@@ -1,16 +1,14 @@
 import numpy as np
 
-from discopat.core import Array, ComputingDevice, DataLoader, NeuralNet
+from discopat.core import ComputingDevice, DataLoader, NeuralNet
 from discopat.evaluation.matching import (
     match_groundtruths_and_predictions,
 )
 
 
 def compute_ap(
-    prediction_dict: dict[str, Array],
-    data_loader: DataLoader,
+    matching_dict: dict[str, np.array],
     threshold: float,
-    localization_criterion: str,
     device: ComputingDevice,
 ) -> float:
     """Compute the Average Precision (AP) for a given localization threshold.
@@ -27,25 +25,32 @@ def compute_ap(
 
     """
     num_groundtruths = 0
-    big_tp_vector = np.empty((0, 2))
-    for _, targets in data_loader:
-        outputs = [prediction_dict[t["image_id"]] for t in targets]
-        outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
-        for target, output in zip(targets, outputs):
-            num_gts, tp_vector = match_groundtruths_and_predictions(
-                groundtruths=target["boxes"],
-                predictions=output["boxes"],
-                scores=output["scores"],
-                threshold=threshold,
-                localization_criterion=localization_criterion,
-            )
-            num_groundtruths += num_gts
-            big_tp_vector = np.concat((big_tp_vector, tp_vector))
+    big_tp_vector = np.empty(0)
+    big_score_vector = np.empty(0)
+    for image_id, matching_results in matching_dict.items():
+        matching_matrix = matching_results["matching_matrix"]
+        scores = matching_results["scores"]
+
+        num_preds, num_gts = matching_matrix.shape
+
+        matching_mask = (matching_matrix >= threshold).astype(float)
+
+        score_weighted_matches = scores.reshape(-1, 1) * matching_mask
+        max_indices = np.argmax(score_weighted_matches, axis=0)
+
+        max_score_mask = np.zeros_like(matching_matrix)
+        max_score_mask[max_indices, np.arange(num_preds)] = 1
+
+        tp_vector = np.max(matching_mask * max_score_mask, axis=1)
+
+        num_groundtruths += num_gts
+        big_tp_vector = np.concat((big_tp_vector, tp_vector))
+        big_score_vector = np.concat((big_score_vector, scores))
     if num_groundtruths == 0:
         return 0
 
     # Sort the TP vector by decreasing prediction score over the whole dataset
-    big_tp_vector = big_tp_vector[np.argsort(-big_tp_vector[:, 0])]
+    big_tp_vector = big_tp_vector[np.argsort(-big_score_vector)]
 
     # Cumulative sums
     tp_cumulative = np.cumsum(big_tp_vector[:, 1])
