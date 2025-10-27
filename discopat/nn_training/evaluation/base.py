@@ -107,13 +107,13 @@ def evaluate(
     }
     matching_dict = {
         t["image_id"]: match_groundtruths_and_predictions(
-            groundtruths,
-            prediction_dict[t["image_id"]],
-            scores,
-            localization_criterion,
+            groundtruths=t["boxes"],
+            predictions=prediction_dict[t["image_id"]]["boxes"],
+            scores=prediction_dict[t["image_id"]]["scores"],
+            localization_criterion=localization_criterion,
         )
         for _, targets in data_loader
-        for _, t in targets
+        for t in targets
     }
     ap_dict = {
         f"AP{int(100 * threshold)}": compute_ap(matching_dict, threshold)
