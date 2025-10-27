@@ -25,13 +25,14 @@ def compute_ap(
 
     """
     num_groundtruths = 0
-    big_tp_vector = np.empty(0)
-    big_score_vector = np.empty(0)
-    for image_id, matching_results in matching_dict.items():
-        matching_matrix = matching_results["matching_matrix"]
-        scores = matching_results["scores"]
+    tp_vector_list = []
+    score_vector_list = []
 
-        num_preds, num_gts = matching_matrix.shape
+    for image_id in matching_dict:
+        matching_matrix = matching_dict[image_id]["matching_matrix"]
+        scores = matching_dict[image_id]["scores"]
+
+        _, num_gts = matching_matrix.shape
 
         matching_mask = (matching_matrix >= threshold).astype(float)
 
@@ -39,15 +40,19 @@ def compute_ap(
         max_indices = np.argmax(score_weighted_matches, axis=0)
 
         max_score_mask = np.zeros_like(matching_matrix)
-        max_score_mask[max_indices, np.arange(num_preds)] = 1
+        max_score_mask[max_indices, np.arange(num_gts)] = 1
 
         tp_vector = np.max(matching_mask * max_score_mask, axis=1)
 
         num_groundtruths += num_gts
-        big_tp_vector = np.concat((big_tp_vector, tp_vector))
-        big_score_vector = np.concat((big_score_vector, scores))
+        tp_vector_list.append(tp_vector)
+        score_vector_list.append(scores)
+
     if num_groundtruths == 0:
         return 0
+
+    big_tp_vector = np.concat(tp_vector_list)
+    big_score_vector = np.concat(score_vector_list)
 
     # Sort the TP vector by decreasing prediction score over the whole dataset
     big_tp_vector = big_tp_vector[np.argsort(-big_score_vector)]
