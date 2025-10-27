@@ -16,7 +16,7 @@ def match_groundtruths_and_predictions(
     scores: list,
     threshold: float,
     localization_criterion: str,
-) -> tuple[int, list[tuple[float, float]]]:
+) -> dict[str, np.array]:
     """Match GTs and predictions on an image in the dataset.
 
     Args:
@@ -45,20 +45,9 @@ def match_groundtruths_and_predictions(
     predictions = predictions[order]
     scores = scores[order]
 
-    # Track matches
-    gt_matched = np.zeros(len(groundtruths), dtype=bool)
-    tps = np.zeros(len(predictions))
+    matching_matrix = make_matching_matrix(groundtruths, predictions)
 
-    for i, pred in enumerate(predictions):
-        # Find best matching GT
-        loc_scores = [make_matching_matrix(pred, gt) for gt in groundtruths]
-        best_gt = int(np.argmax(loc_scores))
-        best_loc = loc_scores[best_gt]
-        if best_loc >= threshold and not gt_matched[best_gt]:
-            tps[i] = 1
-            gt_matched[best_gt] = True
-
-    return len(groundtruths), np.array(list(zip(scores, tps))).reshape(-1, 2)
+    return {"matching_matrix": matching_matrix, "scores": scores}
 
 
 def compute_iou_matrix(

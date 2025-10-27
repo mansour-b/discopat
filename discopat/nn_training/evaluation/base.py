@@ -1,5 +1,3 @@
-import time
-
 import numpy as np
 
 from discopat.core import Array, ComputingDevice, DataLoader, NeuralNet
@@ -32,15 +30,8 @@ def compute_ap(
     big_tp_vector = np.empty((0, 2))
     for _, targets in data_loader:
         outputs = [prediction_dict[t["image_id"]] for t in targets]
-        print("    Transfering outputs to CPU...")
-        start = time.process_time()
         outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
-        end = time.process_time()
-        print(f"    Done in {end - start:.2f} seconds.")
-        print()
         for target, output in zip(targets, outputs):
-            print("        Matching...")
-            start = time.process_time()
             num_gts, tp_vector = match_groundtruths_and_predictions(
                 groundtruths=target["boxes"],
                 predictions=output["boxes"],
@@ -48,11 +39,8 @@ def compute_ap(
                 threshold=threshold,
                 localization_criterion=localization_criterion,
             )
-            end = time.process_time()
-            print(f"        Done in {end - start:.2f} seconds.")
             num_groundtruths += num_gts
             big_tp_vector = np.concat((big_tp_vector, tp_vector))
-        print()
     if num_groundtruths == 0:
         return 0
 
@@ -98,10 +86,6 @@ def evaluate(
 
     """
     model.eval()
-    print()
-    print("===")
-    print("Compute predictions...")
-    start = time.process_time()
     prediction_dict = {
         t["image_id"]: pred
         for images, targets in data_loader
@@ -109,11 +93,6 @@ def evaluate(
             model([img.to(device).float() for img in images]), targets
         )
     }
-    end = time.process_time()
-    print(f"Done in {end - start:.2f} seconds.")
-    print()
-    print("Build AP dict...")
-    start = time.process_time()
     ap_dict = {
         f"AP{int(100 * threshold)}": compute_ap(
             prediction_dict,
@@ -124,8 +103,4 @@ def evaluate(
         )
         for threshold in np.arange(0.5, 1.0, 0.05)
     }
-    end = time.process_time()
-    print(f"Done in {end - start:.2f} seconds.")
-    print("===")
-    print()
     return {"AP50": ap_dict["AP50"], "AP": np.mean(list(ap_dict.values()))}
