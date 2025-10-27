@@ -7,21 +7,23 @@ from discopat.evaluation.matching import (
 
 
 def compute_ap(
-    matching_dict: dict[str, np.array],
-    threshold: float,
-    device: ComputingDevice,
+    matching_dict: dict[str, dict[str, np.array]], threshold: float
 ) -> float:
     """Compute the Average Precision (AP) for a given localization threshold.
 
     Args:
-        model: the neural network to be evaluated,
-        data_loader: the evaluation dataloader,
+        matching_dict: dictionary in the form:
+            image_id: {
+                "matching_matrix": array of shape (N_preds, N_gts),
+                "scores": array of shape (N_preds,)
+            }
         threshold: localization threshold,
-        localization_criterion: metric used to match groundtruths and predictions,
-        device: computing device on which the model is stored.
 
     Returns:
         The AP.
+
+    Note:
+        The predictions and scores should already be sorted by descending score.
 
     """
     num_groundtruths = 0
@@ -103,14 +105,18 @@ def evaluate(
             model([img.to(device).float() for img in images]), targets
         )
     }
-    ap_dict = {
-        f"AP{int(100 * threshold)}": compute_ap(
-            prediction_dict,
-            data_loader,
-            threshold=threshold,
-            localization_criterion=localization_criterion,
-            device=device,
+    matching_dict = {
+        t["image_id"]: match_groundtruths_and_predictions(
+            groundtruths,
+            prediction_dict[t["image_id"]],
+            scores,
+            localization_criterion,
         )
+        for _, targets in data_loader
+        for _, t in targets
+    }
+    ap_dict = {
+        f"AP{int(100 * threshold)}": compute_ap(matching_dict, threshold)
         for threshold in np.arange(0.5, 1.0, 0.05)
     }
     return {"AP50": ap_dict["AP50"], "AP": np.mean(list(ap_dict.values()))}
