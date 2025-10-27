@@ -19,12 +19,20 @@ class TorchNNTrainer(NNTrainer):
                 print_freq=print_frequency,
             )
             self.lr_scheduler.step()
-            evaluate(
+            evaluation_dict = evaluate(
                 self.net,
                 self.val_dataset,
                 localization_criterion="iomean",
                 device=self.device,
             )
+            print()
+            print("===")
+            print(f"Evaluation after epoch {epoch}:")
+            print()
+            for k, v in evaluation_dict.items():
+                print(f"{k:<10}: {v:.3f}")
+            print("===")
+            print()
             for callback in self.callbacks:
                 callback(self.net, self.device)
 
