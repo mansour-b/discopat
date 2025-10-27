@@ -1,7 +1,7 @@
 import numpy as np
 
 from discopat.core import ComputingDevice, DataLoader, NeuralNet
-from discopat.evaluation.matching import (
+from discopat.nn_training.evaluation.matching import (
     match_groundtruths_and_predictions,
 )
 
