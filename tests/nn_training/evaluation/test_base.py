@@ -174,7 +174,7 @@ class TestBase:
                         "scores": np.array([0.9]),
                     },
                     "image1": {
-                        "matching_matrix": np.array([[2 / 7]]),
+                        "matching_matrix": np.array([[2 / 3]]),
                         "scores": np.array([0.9]),
                     },
                 },
