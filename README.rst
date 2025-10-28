@@ -103,7 +103,7 @@ Here is an example to briefly present the API:
    :target: https://github.com/mansour-b/discopat/blob/main/LICENSE
 
 .. |Downloads| image:: https://static.pepy.tech/badge/discopat
-   :target: https://pepy.tech/project/myproject
+   :target: https://pepy.tech/project/discopat
 
 .. |Docs| image:: https://readthedocs.org/projects/discopat/badge/?version=latest
    :target: https://discopat.readthedocs.io/en/latest/
