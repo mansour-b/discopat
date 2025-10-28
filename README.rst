@@ -4,7 +4,7 @@
 DISCOver PATterns (DISCOPAT)
 ----------------------------
 
-|Build Status| |Code Coverage|
+|Build Status| |Code Coverage| |PyPI Version| |Python Versions| |License| |Downloads| |Docs|
 
 Welcome to ``discopat``, the pattern discovery library!
 
@@ -90,5 +90,21 @@ Here is an example to briefly present the API:
 .. |Build Status| image:: https://github.com/mansour-b/discopat/actions/workflows/pytest.yaml/badge.svg
    :target: https://github.com/mansour-b/discopat/actions/workflows/pytest.yaml
 
-.. |Code Coverage| image:: https://codecov.io/github/mansour-b/discopat/graph/badge.svg?token=E37XYKWFWT
+.. |Code Coverage| image:: https://codecov.io/github/mansour-b/discopat/graph/badge.svg
    :target: https://codecov.io/github/mansour-b/discopat
+
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/discopat.svg
+   :target: https://pypi.org/project/discopat/
+
+.. |Python Versions| image:: https://img.shields.io/pypi/pyversions/discopat.svg
+   :target: https://pypi.org/project/discopat/
+
+.. |License| image:: https://img.shields.io/github/license/mansour-b/discopat.svg
+   :target: https://github.com/mansour-b/discopat/blob/main/LICENSE
+
+.. |Downloads| image:: https://static.pepy.tech/badge/discopat
+   :target: https://pepy.tech/project/myproject
+
+.. |Docs| image:: https://readthedocs.org/projects/discopat/badge/?version=latest
+   :target: https://discopat.readthedocs.io/en/latest/
+
