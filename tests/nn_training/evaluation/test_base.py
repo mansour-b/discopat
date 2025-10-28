@@ -154,20 +154,30 @@ class TestBase:
                 0.5,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
-                [
-                    np.array([[0, 0, 1, 1, 0.9]]),
-                    np.array([[2, 2, 2.5, 3, 0.9]]),
-                ],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[2 / 3]]),
+                        "scores": np.array([0.7]),
+                    },
+                },
                 0.6,
                 1,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
-                [
-                    np.array([[0, 0, 1, 1, 0.9]]),
-                    np.array([[2, 2, 2.5, 3, 0.9]]),
-                ],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[2 / 7]]),
+                        "scores": np.array([0.9]),
+                    },
+                },
                 0.7,
                 0.5,
             ),
