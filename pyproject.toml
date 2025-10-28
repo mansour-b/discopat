@@ -7,7 +7,7 @@ packages = ["discopat"]
 
 [project]
 name = "discopat"
-version = "0.5.dev0"
+version = "0.4.1"
 readme = "README.rst"
 description = "DISCOver PATterns (DISCOPAT)"
 license = {file = "LICENSE"}

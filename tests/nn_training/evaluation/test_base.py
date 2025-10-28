@@ -3,14 +3,10 @@ import pytest
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from discopat.nn_training.evaluation import (
-    compute_ap,
-    evaluate,
-    match_gts_and_preds,
-)
+from discopat.nn_training.evaluation.base import compute_ap, evaluate
 
 
-class TestEval:
+class TestBase:
     @staticmethod
     def make_model(predictions):
         class DummyModel:
@@ -22,6 +18,8 @@ class TestEval:
                     }
                     for p in predictions
                 ]
+
+            def eval(self): ...
 
         return DummyModel()
 
@@ -58,9 +56,8 @@ class TestEval:
                 # Create a dummy target dict (like torchvision detection datasets)
                 target = {
                     "boxes": boxes,
-                    "labels": torch.ones(
-                        (len(boxes),), dtype=torch.int64
-                    ),  # optional dummy labels
+                    "labels": torch.ones((len(boxes),), dtype=torch.int64),
+                    "image_id": idx,
                 }
 
                 return image, target
@@ -76,175 +73,125 @@ class TestEval:
 
     @pytest.mark.parametrize(
         (
-            "groundtruths",
-            "predictions",
+            "matching_dict",
             "threshold",
-            "localization_criterion",
             "expected",
         ),
         [
             pytest.param(
-                [[0, 0, 1, 1]], [[0, 0, 1, 1, 0.9]], 0.5, "iou", (1, (0.9, 1))
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[]]),
+                        "scores": np.array([]),
+                    }
+                },
+                0.5,
+                0,
             ),
             pytest.param(
-                [[0, 0, 1, 1]],
-                [[0.5, 0, 1.5, 1, 0.9]],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    }
+                },
                 0.5,
-                "iou",
-                (1, (0.9, 0)),
-            ),
-            pytest.param(
-                [[0, 0, 1, 1]],
-                [[0.5, 0.5, 1.5, 1.5, 0.9]],
-                0.5,
-                "iou",
-                (1, (0.9, 0)),
-            ),
-            pytest.param(
-                [[0, 0, 1, 1]],
-                [[0, 0, 1, 1, 0.9]],
-                0.5,
-                "iomean",
-                (1, (0.9, 1)),
-            ),
-            pytest.param(
-                [[0, 0, 1, 1]],
-                [[0.5, 0, 1.5, 1, 0.9]],
-                0.5,
-                "iomean",
-                (1, (0.9, 1)),
-            ),
-            pytest.param(
-                [[0, 0, 1, 1]],
-                [[0.5, 0.5, 1.5, 1.5, 0.9]],
-                0.5,
-                "iomean",
-                (1, (0.9, 0)),
-            ),
-            pytest.param(
-                [[0, 0, 1, 1], [2, 2, 3, 3]],
-                [[0, 0, 1, 1, 0.5], [2, 2, 3, 3, 0.9]],
-                0.5,
-                "iou",
-                (2, [(0.9, 1), (0.5, 1)]),
-            ),
-            pytest.param(
-                [[0, 0, 1, 1], [2, 2, 3, 3]],
-                [[3, 3, 4, 4, 0.9], [2, 2, 3, 3, 0.5]],
-                0.5,
-                "iou",
-                (2, [(0.9, 0), (0.5, 1)]),
-            ),
-        ],
-    )
-    def test_match_gts_and_preds(
-        self,
-        groundtruths,
-        predictions,
-        threshold,
-        localization_criterion,
-        expected,
-    ):
-        boxes = [p[:4] for p in predictions]
-        scores = [p[-1] for p in predictions]
-        num_groundtruths, tp_vector = match_gts_and_preds(
-            groundtruths,
-            boxes,
-            scores,
-            threshold,
-            localization_criterion,
-        )
-        assert num_groundtruths == expected[0]
-        assert np.allclose(tp_vector, expected[1])
-
-    @pytest.mark.parametrize(
-        (
-            "groundtruths",
-            "predictions",
-            "threshold",
-            "localization_criterion",
-            "expected",
-        ),
-        [
-            pytest.param([[]], [np.empty((0, 5))], 0.5, "iou", 0),
-            pytest.param(
-                [np.array([[0, 0, 1, 1]])],
-                [np.array([[0, 0, 1, 1, 0.9]])],
-                0.5,
-                "iou",
                 1,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[0, 0, 1, 1]])],
-                [np.array([[0, 0, 1, 1, 0.9]]), np.array([[0, 0, 1, 1, 0.9]])],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                },
                 0.5,
-                "iou",
                 1,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
-                [
-                    np.array([[0, 0, 1, 1, 0.9]]),
-                    np.array([[2, 2, 2.4, 3, 0.9]]),
-                ],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[0.4]]),
+                        "scores": np.array([0.9]),
+                    },
+                },
                 0.5,
-                "iou",
                 0.5,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
-                [
-                    np.array([[0, 0, 1, 1, 0.9]]),
-                    np.array([[2, 2, 2.4, 3, 0.9]]),
-                ],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[0.57]]),
+                        "scores": np.array([0.9]),
+                    },
+                },
                 0.5,
-                "iomean",
                 1,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
-                [
-                    np.array([[0, 0, 1, 1, 0.9]]),
-                    np.array([[2, 2, 2.4, 3, 0.9]]),
-                ],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[0.57]]),
+                        "scores": np.array([0.9]),
+                    },
+                },
                 0.6,
-                "iomean",
                 0.5,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
-                [
-                    np.array([[0, 0, 1, 1, 0.9]]),
-                    np.array([[2, 2, 2.5, 3, 0.9]]),
-                ],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[2 / 3]]),
+                        "scores": np.array([0.7]),
+                    },
+                },
                 0.6,
-                "iomean",
                 1,
             ),
             pytest.param(
-                [np.array([[0, 0, 1, 1]]), np.array([[2, 2, 3, 3]])],
-                [
-                    np.array([[0, 0, 1, 1, 0.9]]),
-                    np.array([[2, 2, 2.5, 3, 0.9]]),
-                ],
+                {
+                    "image0": {
+                        "matching_matrix": np.array([[1]]),
+                        "scores": np.array([0.9]),
+                    },
+                    "image1": {
+                        "matching_matrix": np.array([[2 / 3]]),
+                        "scores": np.array([0.9]),
+                    },
+                },
                 0.7,
-                "iomean",
                 0.5,
             ),
         ],
     )
     def test_compute_ap(
         self,
-        groundtruths,
-        predictions,
+        matching_dict,
         threshold,
-        localization_criterion,
         expected,
     ):
-        model = self.make_model(predictions)
-        data_loader = self.make_data_loader(groundtruths)
         assert np.isclose(
-            compute_ap(model, data_loader, threshold, localization_criterion),
+            compute_ap(matching_dict, threshold),
             expected,
         )
 
@@ -289,7 +236,7 @@ class TestEval:
     ):
         model = self.make_model(predictions)
         data_loader = self.make_data_loader(groundtruths)
-        res = evaluate(model, data_loader, localization_criterion)
+        res = evaluate(model, data_loader, localization_criterion, device="cpu")
         assert res.keys() == expected.keys()
         assert np.allclose(
             [res[k] for k in res], [expected[k] for k in expected]
