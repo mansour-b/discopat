@@ -7,6 +7,8 @@ def to_np_array(list_or_tensor: Array) -> np.array:
     """Cast to numpy array."""
     if type(list_or_tensor) is list:
         return np.array(list_or_tensor)
+    if type(list_or_tensor) is np.ndarray:
+        return list_or_tensor
     return list_or_tensor.detach().cpu().numpy()
 
 

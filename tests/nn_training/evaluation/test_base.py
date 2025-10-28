@@ -19,6 +19,8 @@ class TestBase:
                     for p in predictions
                 ]
 
+            def eval(self): ...
+
         return DummyModel()
 
     @staticmethod
@@ -54,9 +56,8 @@ class TestBase:
                 # Create a dummy target dict (like torchvision detection datasets)
                 target = {
                     "boxes": boxes,
-                    "labels": torch.ones(
-                        (len(boxes),), dtype=torch.int64
-                    ),  # optional dummy labels
+                    "labels": torch.ones((len(boxes),), dtype=torch.int64),
+                    "image_id": idx,
                 }
 
                 return image, target
@@ -235,7 +236,7 @@ class TestBase:
     ):
         model = self.make_model(predictions)
         data_loader = self.make_data_loader(groundtruths)
-        res = evaluate(model, data_loader, localization_criterion)
+        res = evaluate(model, data_loader, localization_criterion, device="cpu")
         assert res.keys() == expected.keys()
         assert np.allclose(
             [res[k] for k in res], [expected[k] for k in expected]

@@ -34,6 +34,9 @@ def compute_ap(
         matching_matrix = matching_dict[image_id]["matching_matrix"]
         scores = matching_dict[image_id]["scores"]
 
+        if matching_matrix.size == 0:
+            continue
+
         _, num_gts = matching_matrix.shape
 
         matching_mask = (matching_matrix >= threshold).astype(float)
