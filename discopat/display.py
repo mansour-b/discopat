@@ -5,13 +5,17 @@ from typing import TYPE_CHECKING
 
 import imageio
 import matplotlib as mpl
+import numpy as np
 from matplotlib import pyplot as plt
 from moviepy.video.io.bindings import mplfig_to_npimage
+from PIL import Image, ImageDraw
+
+from discopat.repositories.local import DISCOPATH
 
 if TYPE_CHECKING:
     from matplotlib.axes._axes import Axes
 
-    from discopat.core import Annotation, Box, Frame, Keypoint
+    from discopat.core import Annotation, Box, Frame, Keypoint, Movie
 
 
 def make_movie(
@@ -24,19 +28,120 @@ def make_movie(
     mpl.use("agg")
 
     time_str = time.strftime("%y%m%d_%H%M%S")
-    movie_path = f"misc/{image_dir_name}_{time_str}.{output_format}"
+    movie_path = DISCOPATH / f"misc/{image_dir_name}_{time_str}.{output_format}"
 
     with imageio.get_writer(movie_path, fps=fps) as writer:
         for image in image_list:
             fig = plot_frame(
                 image,
-                image_dir_name,
                 show_figure=False,
                 return_figure=True,
                 **plot_image_kwargs,
             )
             writer.append_data(mplfig_to_npimage(fig))
             plt.close(fig)
+
+
+def to_int(image_array: np.array) -> np.array:
+    min_val = image_array.min()
+    max_val = image_array.max()
+    return ((image_array - min_val) / (max_val - min_val) * 255).astype(
+        np.uint8
+    )
+
+
+def get_center_path(track: np.array) -> np.array:
+    """Get the trajectory of the center of the boxes corresponding to one track.
+
+    Args:
+        track: Array of shape (num_frames, 5) where each line corresponds to a box:
+            - track[:, 0] = id of the frame,
+            - track[:, 1] = xmin,
+            - track[:, 2] = ymin,
+            - track[:, 3] = xmax,
+            - track[:, 4] = ymax.
+
+    Returns:
+        Array of shape (num_frame, 2), where each line corresponds to the (x, y) coordinates of the center of the box.
+
+    """
+    xmin_array = track[:, 1]
+    ymin_array = track[:, 2]
+    xmax_array = track[:, 3]
+    ymax_array = track[:, 4]
+
+    id_col = np.expand_dims(track[:, 0], axis=1)
+
+    x_col = np.expand_dims((xmin_array + xmax_array) / 2, axis=1)
+    y_col = np.expand_dims((ymin_array + ymax_array) / 2, axis=1)
+
+    return np.hstack([id_col, x_col, y_col])
+
+
+def frame_to_pil(
+    frame: Frame,
+    tracks: np.array,
+    max_track_length: int = 0,
+    persistence: int = 10,
+    cmap: str = "gray",
+    track_color: str = "red",
+) -> Image:
+    i = int(frame.name)
+
+    color_map = mpl.colormaps.get_cmap(cmap)
+    image_array = to_int(color_map(to_int(frame.image_array)))
+    pil_image = Image.fromarray(image_array)
+    pil_image = pil_image.convert("RGB")
+    draw = ImageDraw.Draw(pil_image)
+
+    for track_id, track in tracks.items():
+        if int(track[-1, 0]) < i - persistence:
+            continue
+        current_track = track[track[:, 0] <= i]
+        if len(current_track) <= 1:
+            continue
+
+        center_path = get_center_path(current_track)
+        draw.line(
+            xy=[(pos[1], pos[2]) for pos in center_path[-max_track_length:]],
+            fill=track_color,
+            width=3,
+        )
+
+    for box in frame.annotations:
+        draw.rectangle(
+            [box.xmin, box.ymin, box.xmax, box.ymax], outline=track_color
+        )
+
+    return pil_image
+
+
+def make_movie(
+    movie: Movie,
+    persistence: int,
+    cmap: str,
+    track_color: str,
+    fps: int,
+    output_format: str,
+):
+    mpl.use("agg")
+
+    time_str = time.strftime("%y%m%d_%H%M%S")
+    movie_path = DISCOPATH / f"misc/{movie.name}_{time_str}.{output_format}"
+
+    with imageio.get_writer(movie_path, fps=fps) as writer:
+        for frame in movie.frames:
+            writer.append_data(
+                np.array(
+                    frame_to_pil(
+                        frame,
+                        movie.tracks,
+                        persistence=persistence,
+                        cmap=cmap,
+                        track_color=track_color,
+                    )
+                )
+            )
 
 
 def plot_frame(  # noqa: RET503
@@ -48,6 +153,7 @@ def plot_frame(  # noqa: RET503
     figure_size: tuple[float, float] or None = None,
     figure_dpi: int or None = None,
 ):
+    mpl.use("inline")
     image_array = frame.image_array
     fig, ax = plt.subplots(1, 1, figsize=figure_size, dpi=figure_dpi)
     fig.subplots_adjust(top=1, bottom=0, left=0, right=1)
