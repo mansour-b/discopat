@@ -1,7 +1,7 @@
 import torch
 
 
-def get_device(allow_mps: bool = False):
+def get_device(allow_mps: bool = True):
     if torch.cuda.is_available():
         return "cuda"
     if not allow_mps:
