@@ -34,7 +34,6 @@ dependencies = [
   "imageio",
   "ipykernel",
   "matplotlib",
-  "moviepy<2",
   "numpy",
   "osfclient",
   "pycocotools",
