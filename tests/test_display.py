@@ -36,4 +36,19 @@ def test_frame_to_pil():
         annotations=[],
         image_array=np.zeros((10, 10)),
     )
-    tracks = {0: np.array()}
+    tracks = {
+        0: np.hstack([np.arange(10).reshape(-1, 1), np.zeros(10, 4)]),
+        1: np.hstack(
+            [
+                np.arange(200),
+                np.ones(200),
+                np.ones(200),
+                np.ones(200),
+                np.ones(200),
+            ]
+        ),
+    }
+
+    pil_image = frame_to_pil(frame, tracks)
+
+    assert np.allclose(np.array(pil_image), np.ones((10, 10)))
