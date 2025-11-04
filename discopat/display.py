@@ -66,6 +66,7 @@ def frame_to_pil(
     cmap: str = "gray",
     track_color: str = "red",
 ) -> Image:
+    """Make a PIL image from a frame."""
     i = int(frame.name)
 
     color_map = mpl.colormaps.get_cmap(cmap)
@@ -74,7 +75,7 @@ def frame_to_pil(
     pil_image = pil_image.convert("RGB")
     draw = ImageDraw.Draw(pil_image)
 
-    for track_id, track in tracks.items():
+    for track in tracks.values():
         if int(track[-1, 0]) < i - persistence:
             continue
         current_track = track[track[:, 0] <= i]

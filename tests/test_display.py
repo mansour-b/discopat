@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from discopat.display import get_center_path, to_int
+from discopat.core import Box, Frame
+from discopat.display import frame_to_pil, get_center_path, to_int
 
 
 @pytest.mark.parametrize(
@@ -17,7 +18,7 @@ def test_to_int(image_array, expected):
 
 
 def test_get_center_path():
-    track_ids = np.zeros((10, 1))
+    track_ids = np.arange(10).reshaoe(-1, 1)
     xs = np.arange(10).reshape(-1, 1)
     ys = np.arange(0, 20, 2).reshape(-1, 1)
 
@@ -25,3 +26,14 @@ def test_get_center_path():
     expected = np.hstack([track_ids, xs + 1, ys + 1.5])
 
     assert np.allclose(get_center_path(track), expected)
+
+
+def test_frame_to_pil():
+    frame = Frame(
+        name="100",
+        width=10,
+        height=10,
+        annotations=[],
+        image_array=np.zeros((10, 10)),
+    )
+    tracks = {0: np.array()}
