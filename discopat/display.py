@@ -7,7 +7,6 @@ import imageio
 import matplotlib as mpl
 import numpy as np
 from matplotlib import pyplot as plt
-from moviepy.video.io.bindings import mplfig_to_npimage
 from PIL import Image, ImageDraw
 
 from discopat.repositories.local import DISCOPATH
@@ -18,31 +17,12 @@ if TYPE_CHECKING:
     from discopat.core import Annotation, Box, Frame, Keypoint, Movie
 
 
-def make_movie(
-    image_list: list[Frame],
-    image_dir_name: str,
-    fps: int,
-    output_format: str,
-    **plot_image_kwargs,
-):
-    mpl.use("agg")
-
-    time_str = time.strftime("%y%m%d_%H%M%S")
-    movie_path = DISCOPATH / f"misc/{image_dir_name}_{time_str}.{output_format}"
-
-    with imageio.get_writer(movie_path, fps=fps) as writer:
-        for image in image_list:
-            fig = plot_frame(
-                image,
-                show_figure=False,
-                return_figure=True,
-                **plot_image_kwargs,
-            )
-            writer.append_data(mplfig_to_npimage(fig))
-            plt.close(fig)
-
-
 def to_int(image_array: np.array) -> np.array:
+    """Convert array to int [0, 255].
+
+    Warning: values will be scaled even if the input array is already of type int.
+
+    """
     min_val = image_array.min()
     max_val = image_array.max()
     return ((image_array - min_val) / (max_val - min_val) * 255).astype(
