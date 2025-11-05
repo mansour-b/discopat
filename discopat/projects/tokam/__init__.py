@@ -25,7 +25,7 @@ SET_TABLE = {
 MOVIE_REPO = HDF5Repository("tokam2d")
 MODEL_REPO = LocalNNModelRepository("models")
 
-COMPUTING_DEVICE = "cpu"
+COMPUTING_DEVICE = get_device(allow_mps=False)
 print("Computing device:", COMPUTING_DEVICE)
 
 
