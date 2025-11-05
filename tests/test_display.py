@@ -41,15 +41,15 @@ def test_frame_to_pil():
         0: np.hstack([np.arange(10).reshape(-1, 1), np.zeros((10, 4))]),
         1: np.hstack(
             [
-                np.arange(200),
-                np.ones(200),
-                np.ones(200),
-                np.ones(200),
-                np.ones(200),
+                np.arange(200).reshape(-1, 1),
+                np.ones((200, 1)),
+                np.ones((200, 1)),
+                np.ones((200, 1)),
+                np.ones((200, 1)),
             ]
         ),
     }
 
     pil_image = frame_to_pil(frame, tracks)
 
-    assert np.allclose(np.array(pil_image), np.ones((10, 10)))
+    assert np.allclose(np.array(pil_image), np.ones((10, 10, 3)))
