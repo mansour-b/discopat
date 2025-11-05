@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from discopat.core import Annotation, Box, Frame, Keypoint, Movie
 
 
-def to_int(image_array: np.array) -> np.array:
+def to_int(image_array: np.array, eps: float = 1e-10) -> np.array:
     """Convert array to int [0, 255].
 
     Warning: values will be scaled even if the input array is already of type int.
@@ -25,9 +25,9 @@ def to_int(image_array: np.array) -> np.array:
     """
     min_val = image_array.min()
     max_val = image_array.max()
-    return ((image_array - min_val) / (max_val - min_val) * 255).astype(
-        np.uint8
-    )
+    return (
+        np.round((image_array - min_val) / (max_val - min_val + eps) * 255)
+    ).astype(np.uint8)
 
 
 def get_center_path(track: np.array) -> np.array:
