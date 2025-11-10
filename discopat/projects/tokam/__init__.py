@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
 
-from discopat.core import Model, Movie
+import torch
+
+from discopat.core import Frame, Model, Movie
+from discopat.datasets.torch import TorchBoxDataset
 from discopat.nn_models import FasterRCNNModel
 from discopat.repositories.hdf5 import HDF5Repository
 from discopat.repositories.local import DISCOPATH, LocalNNModelRepository
@@ -81,3 +84,34 @@ def load_model(model_name: str) -> Model:
     model.set_device(COMPUTING_DEVICE)
 
     return model
+
+
+def collate_fn(batch: torch.Tensor) -> tuple:
+    """Collate function to make dataloaders."""
+    return tuple(zip(*batch))
+
+
+def make_dataloaders(
+    train_frames: list[Frame],
+    val_frames: list[Frame],
+    label_map: dict[int, str],
+    train_batch_size: int,
+    val_batch_size: int,
+) -> tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader]:
+    """Build data loaders from train- and val frames."""
+    train_ds = TorchBoxDataset(train_frames, label_map)
+    val_ds = TorchBoxDataset(val_frames, label_map)
+
+    train_dataloader = torch.utils.data.DataLoader(
+        train_ds,
+        batch_size=train_batch_size,
+        shuffle=True,
+        collate_fn=collate_fn,
+    )
+    val_dataloader = torch.utils.data.DataLoader(
+        val_ds,
+        batch_size=val_batch_size,
+        shuffle=False,
+        collate_fn=collate_fn,
+    )
+    return train_dataloader, val_dataloader
