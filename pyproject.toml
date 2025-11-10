@@ -59,6 +59,9 @@ test = [
   "pytest-cov",
 ]
 
+[project.scripts]
+disco = "discopat.disco:main"
+
 [project.urls]
 Repository = "https://github.com/mansour-b/discopat"
 Documentation = "https://discopat.readthedocs.io"
