@@ -2,7 +2,7 @@
 """DETR model and criterion classes."""
 
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as F  # noqa: N812
 from torch import nn
 from util import box_ops
 from util.misc import (
