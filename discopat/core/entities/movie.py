@@ -39,3 +39,45 @@ class Movie(Metadata):
 
     def __len__(self):
         return len(self.frames)
+
+    def to_coco(self, image_file_extension: str = "png") -> dict:
+        """Convert movie to COCO annotation format."""
+        images = []
+        annotations = []
+        categories = {}
+
+        annotation_counter = 1
+        category_counter = 1
+
+        for i, frame in enumerate(self.frames):
+            image_counter = i + 1
+            images.append(
+                {
+                    "id": image_counter,
+                    "file_name": f"{frame.name}.{image_file_extension}",
+                    "width": frame.width,
+                    "height": frame.height,
+                }
+            )
+            for box in frame.annotations:
+                if box.type != "box":
+                    continue
+                if box.label not in categories:
+                    categories[box.label] = category_counter
+                    category_counter += 1
+                annotations.append(
+                    {
+                        "id": annotation_counter,
+                        "image_id": image_counter,
+                        "category_id": categories[box.label],
+                        "bbox": [box.x, box.y, box.width, box.height],
+                        "area": box.width * box.height,
+                        "iscrowd": 0,
+                    }
+                )
+                annotation_counter += 1
+        return {
+            "images": images,
+            "annotations": annotations,
+            "categories": [{"id": v, "name": k} for k, v in categories.items()],
+        }
