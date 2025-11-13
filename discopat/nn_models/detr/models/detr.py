@@ -4,8 +4,19 @@
 import torch
 import torch.nn.functional as F  # noqa: N812
 from torch import nn
-from util import box_ops
-from util.misc import (
+
+from discopat.nn_models.detr.models.backbone import build_backbone
+from discopat.nn_models.detr.models.matcher import build_matcher
+from discopat.nn_models.detr.models.segmentation import (
+    DETRsegm,
+    PostProcessPanoptic,
+    PostProcessSegm,
+    dice_loss,
+    sigmoid_focal_loss,
+)
+from discopat.nn_models.detr.models.transformer import build_transformer
+from discopat.nn_models.detr.util import box_ops
+from discopat.nn_models.detr.util.misc import (
     NestedTensor,
     accuracy,
     get_world_size,
@@ -13,17 +24,6 @@ from util.misc import (
     is_dist_avail_and_initialized,
     nested_tensor_from_tensor_list,
 )
-
-from .backbone import build_backbone
-from .matcher import build_matcher
-from .segmentation import (
-    DETRsegm,
-    PostProcessPanoptic,
-    PostProcessSegm,
-    dice_loss,
-    sigmoid_focal_loss,
-)
-from .transformer import build_transformer
 
 
 class DETR(nn.Module):
