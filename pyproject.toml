@@ -2,8 +2,10 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["discopat"]
+[tool.setuptools.packages.find]
+namespaces = false
+
+
 
 [project]
 name = "discopat"
