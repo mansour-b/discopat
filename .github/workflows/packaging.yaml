@@ -1,0 +1,31 @@
+name: Check Packaging
+
+on:
+  push:
+    branches: main
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+    - name: Install discopat and tools
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install check-manifest .
+    - name: Check manifest
+      run: check-manifest
+    - name: Check submodules import
+      run: |
+        mkdir running_dir
+        cd running_dir
+        python -c "from discopat import metrics"
+
