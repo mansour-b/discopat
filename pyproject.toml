@@ -40,6 +40,7 @@ dependencies = [
   "osfclient",
   "pycocotools",
   "PyYAML",
+  "rich",
   "scikit-image",
   "torch",
   "torchaudio",
