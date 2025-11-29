@@ -5,6 +5,7 @@ from discopat.projects.tokam import (
     load_model,
     load_movie,
     load_set,
+    make_dataloaders,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "load_model",
     "load_movie",
     "load_set",
+    "make_dataloaders",
 ]
