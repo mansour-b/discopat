@@ -9,11 +9,12 @@ from pathlib import Path
 import datasets
 import numpy as np
 import torch
-import util.misc as utils
 from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch
 from models import build_model
 from torch.utils.data import DataLoader, DistributedSampler
+
+import discopat.nn_models.detr.util.misc as utils
 
 
 def get_args_parser():

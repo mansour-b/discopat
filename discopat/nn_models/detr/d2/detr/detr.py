@@ -23,8 +23,12 @@ from models.position_encoding import PositionEmbeddingSine
 from models.segmentation import DETRsegm, PostProcessSegm
 from models.transformer import Transformer
 from torch import nn
-from util.box_ops import box_cxcywh_to_xyxy, box_xyxy_to_cxcywh
-from util.misc import NestedTensor
+
+from discopat.nn_models.detr.util.box_ops import (
+    box_cxcywh_to_xyxy,
+    box_xyxy_to_cxcywh,
+)
+from discopat.nn_models.detr.util.misc import NestedTensor
 
 __all__ = ["Detr"]
 

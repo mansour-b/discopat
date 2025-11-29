@@ -6,7 +6,8 @@ import torch.nn.functional as F  # noqa: N812
 import torchvision
 from torch import nn
 from torchvision.models._utils import IntermediateLayerGetter
-from util.misc import NestedTensor, is_main_process
+
+from discopat.nn_models.detr.util.misc import NestedTensor, is_main_process
 
 from .position_encoding import build_position_encoding
 
