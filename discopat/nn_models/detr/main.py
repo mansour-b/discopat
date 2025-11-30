@@ -212,6 +212,19 @@ def main(args):
         args.dice_loss_coef,
         args.dec_layers,
         args.eos_coef,
+        args.hidden_dim,
+        args.position_embedding,
+        args.lr_backbone,
+        args.backbone,
+        args.dilation,
+        args.dropout,
+        args.nheads,
+        args.dim_feedforward,
+        args.enc_layers,
+        args.pre_norm,
+        args.set_cost_class,
+        args.set_cost_bbox,
+        args.set_cost_giou,
     )
     model.to(device)
 

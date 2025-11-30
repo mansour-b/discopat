@@ -400,6 +400,19 @@ def build_model(
     dice_loss_coef,
     dec_layers,
     eos_coef,
+    hidden_dim,
+    position_embedding,
+    lr_backbone,
+    backbone,
+    dilation,
+    dropout,
+    nheads,
+    dim_feedforward,
+    enc_layers,
+    pre_norm,
+    set_cost_class,
+    set_cost_bbox,
+    set_cost_giou,
 ):
     # the `num_classes` naming here is somewhat misleading.
     # it indeed corresponds to `max_obj_id + 1`, where max_obj_id
@@ -416,9 +429,19 @@ def build_model(
         num_classes = 250
     device = torch.device(device)
 
-    backbone = build_backbone(args)
+    backbone = build_backbone(
+        hidden_dim, position_embedding, lr_backbone, masks, backbone, dilation
+    )
 
-    transformer = build_transformer(args)
+    transformer = build_transformer(
+        hidden_dim,
+        dropout,
+        nheads,
+        dim_feedforward,
+        enc_layers,
+        dec_layers,
+        pre_norm,
+    )
 
     model = DETR(
         backbone,
@@ -429,7 +452,13 @@ def build_model(
     )
     if masks:
         model = DETRsegm(model, freeze_detr=(frozen_weights is not None))
-    matcher = build_matcher(args)
+
+    matcher = build_matcher(
+        set_cost_class,
+        set_cost_bbox,
+        set_cost_giou,
+    )
+
     weight_dict = {"loss_ce": 1, "loss_bbox": bbox_loss_coef}
     weight_dict["loss_giou"] = giou_loss_coef
     if masks:
