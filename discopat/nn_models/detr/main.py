@@ -14,7 +14,7 @@ from engine import evaluate, train_one_epoch
 from torch.utils.data import DataLoader, DistributedSampler
 
 import discopat.nn_models.detr.util.misc as utils
-from discopat.nn_models.detr.models.detr import build as build_model
+from discopat.nn_models.detr.models.detr import build_model
 
 
 def get_args_parser():
@@ -199,7 +199,20 @@ def main(args):
     np.random.seed(seed)
     random.seed(seed)
 
-    model, criterion, postprocessors = build_model(args)
+    model, criterion, postprocessors = build_model(
+        args.dataset_file,
+        args.device,
+        args.num_queries,
+        args.aux_loss,
+        args.masks,
+        args.frozen_weights,
+        args.bbox_loss_coef,
+        args.giou_loss_coef,
+        args.mask_loss_coef,
+        args.dice_loss_coef,
+        args.dec_layers,
+        args.eos_coef,
+    )
     model.to(device)
 
     model_without_ddp = model
