@@ -6,7 +6,7 @@ import torch.nn.functional as F  # noqa: N812
 from torch import nn
 
 from discopat.nn_models.detr.models.backbone import build_backbone
-from discopat.nn_models.detr.models.matcher import build_matcher
+from discopat.nn_models.detr.models.matcher import HungarianMatcher
 from discopat.nn_models.detr.models.segmentation import (
     DETRsegm,
     PostProcessPanoptic,
@@ -414,18 +414,8 @@ def build_model(
     set_cost_bbox,
     set_cost_giou,
 ):
-    # the `num_classes` naming here is somewhat misleading.
-    # it indeed corresponds to `max_obj_id + 1`, where max_obj_id
-    # is the maximum id for a class in your dataset. For example,
-    # COCO has a max_obj_id of 90, so we pass `num_classes` to be 91.
-    # As another example, for a dataset that has a single class with id 1,
-    # you should pass `num_classes` to be 2 (max_obj_id + 1).
-    # For more details on this, check the following discussion
-    # https://github.com/facebookresearch/detr/issues/108#issuecomment-650269223
     num_classes = 20 if dataset_file != "coco" else 91
     if dataset_file == "coco_panoptic":
-        # for panoptic, we just add a num_classes that is large enough to hold
-        # max_obj_id + 1, but the exact value doesn't really matter
         num_classes = 250
     device = torch.device(device)
 
@@ -453,10 +443,10 @@ def build_model(
     if masks:
         model = DETRsegm(model, freeze_detr=(frozen_weights is not None))
 
-    matcher = build_matcher(
-        set_cost_class,
-        set_cost_bbox,
-        set_cost_giou,
+    matcher = HungarianMatcher(
+        cost_class=set_cost_class,
+        cost_bbox=set_cost_bbox,
+        cost_giou=set_cost_giou,
     )
 
     weight_dict = {"loss_ce": 1, "loss_bbox": bbox_loss_coef}
@@ -464,7 +454,6 @@ def build_model(
     if masks:
         weight_dict["loss_mask"] = mask_loss_coef
         weight_dict["loss_dice"] = dice_loss_coef
-    # TODO this is a hack
     if aux_loss:
         aux_weight_dict = {}
         for i in range(dec_layers - 1):

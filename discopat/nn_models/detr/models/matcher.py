@@ -106,15 +106,3 @@ class HungarianMatcher(nn.Module):
             )
             for i, j in indices
         ]
-
-
-def build_matcher(
-    set_cost_class,
-    set_cost_bbox,
-    set_cost_giou,
-):
-    return HungarianMatcher(
-        cost_class=set_cost_class,
-        cost_bbox=set_cost_bbox,
-        cost_giou=set_cost_giou,
-    )
