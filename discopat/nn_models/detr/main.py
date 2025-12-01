@@ -165,7 +165,7 @@ def get_args_parser():
     parser.add_argument(
         "--start_epoch", default=0, type=int, metavar="N", help="start epoch"
     )
-    parser.add_argument("--eval", action="store_true")
+    parser.add_argumen("--eval", action="store_true")
     parser.add_argument("--num_workers", default=2, type=int)
 
     # distributed training parameters
