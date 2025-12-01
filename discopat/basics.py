@@ -13,7 +13,9 @@ def to_01(array: np.ndarray) -> np.ndarray:
     return (array - vmin) / (vmax - vmin)
 
 
-def gs_to_rgb(array: np.ndarray, channel_mode="channels_last") -> np.ndarray:
+def gs_to_rgb(
+    array: np.ndarray, channel_mode: str = "channels_last"
+) -> np.ndarray:
     if len(array.shape) != 2:
         msg = f"Grayscale image should be of size (H, W). Actual shape: {array.shape}"
         raise ValueError(msg)
