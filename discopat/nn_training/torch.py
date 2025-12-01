@@ -3,8 +3,10 @@ from typing import Any
 import torch
 
 from discopat.core import ComputingDevice, Dataset, NeuralNet
+from discopat.nn_models.detr import PostProcess, SetCriterion
 from discopat.nn_models.detr.engine import evaluate as evaluate_detr
 from discopat.nn_models.detr.engine import train_one_epoch as train_step_detr
+from discopat.nn_models.detr.models.matcher import HungarianMatcher
 from discopat.nn_training.evaluation import evaluate
 from discopat.nn_training.nn_trainer import NNTrainer
 from discopat.nn_training.torch_detection_utils.engine import train_one_epoch
@@ -77,10 +79,34 @@ class DetrTrainer(NNTrainer):
         parameters: dict[str, Any],
         device: ComputingDevice,
         callbacks: list or None = None,
+        num_classes=0,
     ):
         super().__init__(
             net, dataset, val_dataset, parameters, device, callbacks
         )
+        matcher = HungarianMatcher(cost_class=1, cost_bbox=5, cost_giou=2)
+
+        weight_dict = {"loss_ce": 1, "loss_bbox": 5}
+        weight_dict["loss_giou"] = 2
+
+        dec_layers = 6
+        aux_weight_dict = {}
+        for i in range(dec_layers - 1):
+            aux_weight_dict.update(
+                {k + f"_{i}": v for k, v in weight_dict.items()}
+            )
+        weight_dict.update(aux_weight_dict)
+
+        losses = ["labels", "boxes", "cardinality"]
+        criterion = SetCriterion(
+            num_classes,
+            matcher=matcher,
+            weight_dict=weight_dict,
+            eos_coef=0.1,
+            losses=losses,
+        )
+        criterion.to(device)
+        self.postprocessors = {"bbox": PostProcess()}
 
     def train(self, num_epochs: int):
         for epoch in range(num_epochs):
