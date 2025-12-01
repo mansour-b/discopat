@@ -117,7 +117,7 @@ class DetrTrainer(NNTrainer):
                 self.optimiser,
                 self.device,
                 epoch,
-                self.max_norm,
+                max_norm=0,
             )
             self.lr_scheduler.step()
             evaluation_dict = evaluate_detr(
