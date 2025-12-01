@@ -3,9 +3,9 @@ from typing import Any
 import torch
 
 from discopat.core import ComputingDevice, Dataset, NeuralNet
-from discopat.nn_models.detr import PostProcess, SetCriterion
 from discopat.nn_models.detr.engine import evaluate as evaluate_detr
 from discopat.nn_models.detr.engine import train_one_epoch as train_step_detr
+from discopat.nn_models.detr.models.detr import PostProcess, SetCriterion
 from discopat.nn_models.detr.models.matcher import HungarianMatcher
 from discopat.nn_training.evaluation import evaluate
 from discopat.nn_training.nn_trainer import NNTrainer
@@ -98,14 +98,14 @@ class DetrTrainer(NNTrainer):
         weight_dict.update(aux_weight_dict)
 
         losses = ["labels", "boxes", "cardinality"]
-        criterion = SetCriterion(
+        self.criterion = SetCriterion(
             num_classes,
             matcher=matcher,
             weight_dict=weight_dict,
             eos_coef=0.1,
             losses=losses,
         )
-        criterion.to(device)
+        self.criterion.to(device)
         self.postprocessors = {"bbox": PostProcess()}
 
     def train(self, num_epochs: int):

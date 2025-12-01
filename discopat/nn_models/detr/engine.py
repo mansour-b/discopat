@@ -6,13 +6,13 @@ Train and eval functions used in main.py
 import math
 import os
 import sys
-from typing import Iterable
+from collections.abc import Iterable
 
 import torch
-from datasets.coco_eval import CocoEvaluator
-from datasets.panoptic_eval import PanopticEvaluator
 
 import discopat.nn_models.detr.util.misc as utils
+from discopat.nn_models.detr.datasets.coco_eval import CocoEvaluator
+from discopat.nn_models.detr.datasets.panoptic_eval import PanopticEvaluator
 
 
 def train_one_epoch(
