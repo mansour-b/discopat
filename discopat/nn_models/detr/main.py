@@ -6,14 +6,17 @@ import random
 import time
 from pathlib import Path
 
-import datasets
 import numpy as np
 import torch
-from datasets import build_dataset, get_coco_api_from_dataset
-from engine import evaluate, train_one_epoch
 from torch.utils.data import DataLoader, DistributedSampler
 
 import discopat.nn_models.detr.util.misc as utils
+from discopat.nn_models.detr.datasets import (
+    build_dataset,
+    get_coco_api_from_dataset,
+)
+from discopat.nn_models.detr.datasets.coco import build as build_coco
+from discopat.nn_models.detr.engine import evaluate, train_one_epoch
 from discopat.nn_models.detr.models.detr import build_model
 
 
@@ -290,7 +293,7 @@ def main(args):
 
     if args.dataset_file == "coco_panoptic":
         # We also evaluate AP during panoptic training, on original coco DS
-        coco_val = datasets.coco.build("val", args)
+        coco_val = build_coco("val", args)
         base_ds = get_coco_api_from_dataset(coco_val)
     else:
         base_ds = get_coco_api_from_dataset(dataset_val)
