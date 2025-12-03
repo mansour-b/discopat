@@ -163,10 +163,9 @@ def build(image_set, args):
     img_folder = dataset_folder / "images"
     ann_file = dataset_folder / "annotations.json"
 
-    dataset = CocoDetection(
+    return CocoDetection(
         img_folder,
         ann_file,
         transforms=make_coco_transforms(image_set),
         return_masks=args.masks,
     )
-    return dataset
