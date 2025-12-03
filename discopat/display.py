@@ -8,6 +8,7 @@ import matplotlib as mpl
 import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image, ImageDraw
+from tqdm import tqdm
 
 from discopat.repositories.local import DISCOPATH
 
@@ -111,7 +112,7 @@ def make_movie(
     movie_path = DISCOPATH / f"misc/{movie.name}_{time_str}.{output_format}"
 
     with imageio.get_writer(movie_path, fps=fps) as writer:
-        for frame in movie.frames:
+        for frame in tqdm(movie.frames):
             writer.append_data(
                 np.array(
                     frame_to_pil(
