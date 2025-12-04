@@ -37,8 +37,8 @@ class TorchDataset(Dataset):
         return len(self._frame_list)
 
     def prepare_image_tensor(self, frame: Frame) -> torch.Tensor:
-        image_array = self._preprocess_image_array(frame)
-        return self._rescale_histogram(torch.from_numpy(image_array))
+        image_tensor = torch.from_numpy(self._preprocess_image_array(frame))
+        return self._rescale_histogram(image_tensor).to(torch.float32)
 
     def _preprocess_image_array(self, frame: Frame) -> np.array:
         channel_axis_dict = {"channels_first": 0, "channels_last": -1}
@@ -96,9 +96,9 @@ class TorchBoxDataset(TorchDataset):
         )
 
         return {
-            "area": torch.as_tensor(area_array),
+            "area": torch.as_tensor(area_array, dtype=torch.float32),
             "boxes": box_tensor,
-            "image_id": int(frame.name),
+            "image_id": torch.as_tensor(int(frame.name)),
             "iscrowd": torch.zeros((len(box_list),), dtype=torch.int64),
             "labels": torch.as_tensor(label_array),
         }
