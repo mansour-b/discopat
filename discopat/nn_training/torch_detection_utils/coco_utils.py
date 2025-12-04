@@ -86,7 +86,9 @@ def _coco_remove_images_without_annotations(dataset, cat_list=None):
         return all(any(o <= 1 for o in obj["bbox"][2:]) for obj in anno)
 
     def _count_visible_keypoints(anno):
-        return sum(sum(1 for v in ann["keypoints"][2::3] if v > 0) for ann in anno)
+        return sum(
+            sum(1 for v in ann["keypoints"][2::3] if v > 0) for ann in anno
+        )
 
     min_keypoints_per_image = 10
 
@@ -124,7 +126,7 @@ def convert_to_coco_api(ds):
     coco_ds = COCO()
     # annotation IDs need to start at 1, not 0, see torchvision issue #1530
     ann_id = 1
-    dataset = {"images": [], "categories": [], "annotations": []}
+    dataset = {"images": [], "categories": [], "annotations": [], "info": ""}
     categories = set()
     for img_idx in range(len(ds)):
         # find better way to get target
@@ -199,13 +201,20 @@ class CocoDetection(torchvision.datasets.CocoDetection):
 
 
 def get_coco(
-    root, image_set, transforms, mode="instances", use_v2=False, with_masks=False
+    root,
+    image_set,
+    transforms,
+    mode="instances",
+    use_v2=False,
+    with_masks=False,
 ):
     anno_file_template = "{}_{}2017.json"
     PATHS = {
         "train": (
             "train2017",
-            os.path.join("annotations", anno_file_template.format(mode, "train")),
+            os.path.join(
+                "annotations", anno_file_template.format(mode, "train")
+            ),
         ),
         "val": (
             "val2017",
@@ -227,7 +236,9 @@ def get_coco(
         target_keys = ["boxes", "labels", "image_id"]
         if with_masks:
             target_keys += ["masks"]
-        dataset = wrap_dataset_for_transforms_v2(dataset, target_keys=target_keys)
+        dataset = wrap_dataset_for_transforms_v2(
+            dataset, target_keys=target_keys
+        )
     else:
         # TODO: handle with_masks for V1?
         t = [ConvertCocoPolysToMask()]

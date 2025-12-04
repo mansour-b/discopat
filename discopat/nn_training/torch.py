@@ -9,6 +9,9 @@ from discopat.nn_models.detr.models.detr import PostProcess, SetCriterion
 from discopat.nn_models.detr.models.matcher import HungarianMatcher
 from discopat.nn_training.evaluation import evaluate
 from discopat.nn_training.nn_trainer import NNTrainer
+from discopat.nn_training.torch_detection_utils.coco_utils import (
+    get_coco_api_from_dataset,
+)
 from discopat.nn_training.torch_detection_utils.engine import train_one_epoch
 from discopat.repositories.local import DISCOPATH
 
@@ -126,7 +129,7 @@ class DetrTrainer(NNTrainer):
                 self.criterion,
                 self.postprocessors,
                 self.val_dataset,
-                self.val_dataset.dataset,
+                base_ds=get_coco_api_from_dataset(self.val_dataset.dataset),
                 device=self.device,
                 output_dir=DISCOPATH / "detr_outputs",
             )

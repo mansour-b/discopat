@@ -101,6 +101,7 @@ class TorchBoxDataset(TorchDataset):
             "image_id": torch.as_tensor(int(frame.name)),
             "iscrowd": torch.zeros((len(box_list),), dtype=torch.int64),
             "labels": torch.as_tensor(label_array),
+            "orig_size": torch.as_tensor([frame.height, frame.width]),
         }
 
 
