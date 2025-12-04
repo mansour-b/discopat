@@ -158,6 +158,16 @@ class SetCriterion(nn.Module):
         )
         target_classes[idx] = target_classes_o
 
+        print(
+            "===",
+            "LOSS CE",
+            "",
+            f"INPUT : {src_logits.transpose(1, 2).shape}",
+            f"TARGET: {target_classes.shape}",
+            f"WEIGHT: {self.empty_weight.shape}",
+            "",
+            sep="\n",
+        )
         loss_ce = F.cross_entropy(
             src_logits.transpose(1, 2), target_classes, self.empty_weight
         )
@@ -307,9 +317,30 @@ class SetCriterion(nn.Module):
 
         # Compute all the requested losses
         losses = {}
+        print(
+            "===",
+            "LOSSES",
+            "",
+            *self.losses,
+            "",
+            "===",
+            "OUTPUTS",
+            *[(k, v.shape) for k, v in outputs.items()],
+            "",
+            "===",
+            "TARGETS",
+            "",
+            targets.__class__,
+            len(targets),
+            sep="\n",
+        )
+        fake_outputs = {
+            "pred_logits": outputs["pred_logits"][:, :, :2],
+            "pred_boxes": outputs["pred_boxes"],
+        }
         for loss in self.losses:
             losses.update(
-                self.get_loss(loss, outputs, targets, indices, num_boxes)
+                self.get_loss(loss, fake_outputs, targets, indices, num_boxes)
             )
 
         # In case of auxiliary losses, we repeat this process with the output of each intermediate layer.

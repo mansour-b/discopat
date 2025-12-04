@@ -10,6 +10,7 @@ from discopat.nn_models.detr.models.matcher import HungarianMatcher
 from discopat.nn_training.evaluation import evaluate
 from discopat.nn_training.nn_trainer import NNTrainer
 from discopat.nn_training.torch_detection_utils.engine import train_one_epoch
+from discopat.repositories.local import DISCOPATH
 
 
 class TorchNNTrainer(NNTrainer):
@@ -125,9 +126,9 @@ class DetrTrainer(NNTrainer):
                 self.criterion,
                 self.postprocessors,
                 self.val_dataset,
-                self.base_ds,
+                self.val_dataset.dataset,
                 device=self.device,
-                output_dir=self.output_dir,
+                output_dir=DISCOPATH / "detr_outputs",
             )
             print()
             print("===")
