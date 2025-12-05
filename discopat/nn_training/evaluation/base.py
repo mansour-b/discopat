@@ -6,6 +6,11 @@ from discopat.nn_training.evaluation.matching import (
 )
 
 
+def _get_image_id(target):
+    res = target["image_id"]
+    return res.item() if hasattr(res, "item") else res
+
+
 def compute_ap(
     matching_dict: dict[str, dict[str, np.array]], threshold: float
 ) -> float:
@@ -102,17 +107,17 @@ def evaluate(
     """
     model.eval()
     prediction_dict = {
-        t["image_id"]: pred
+        _get_image_id(t): pred
         for images, targets in data_loader
         for pred, t in zip(
             model([img.to(device).float() for img in images]), targets
         )
     }
     matching_dict = {
-        t["image_id"]: match_groundtruths_and_predictions(
+        _get_image_id(t): match_groundtruths_and_predictions(
             groundtruths=t["boxes"],
-            predictions=prediction_dict[t["image_id"]]["boxes"],
-            scores=prediction_dict[t["image_id"]]["scores"],
+            predictions=prediction_dict[_get_image_id(t)]["boxes"],
+            scores=prediction_dict[_get_image_id(t)]["scores"],
             localization_criterion=localization_criterion,
         )
         for _, targets in data_loader
