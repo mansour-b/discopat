@@ -5,7 +5,7 @@ import torch
 from scipy.optimize import linear_sum_assignment
 from torch import nn
 
-from discopat.nn_models.detr.util.box_ops import (
+from discopat.nn_models.detr.box_ops import (
     box_cxcywh_to_xyxy,
     generalized_box_iou,
 )
