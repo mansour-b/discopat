@@ -6,9 +6,6 @@ Mostly copy-paste from torchvision references.
 
 from __future__ import annotations
 
-import os
-import subprocess
-
 import torch
 
 # needed due to empty tensor bug in pytorch and torchvision 0.5
@@ -16,35 +13,9 @@ import torchvision
 from packaging import version
 from torch import Tensor
 
-from discopat.nn_training.torch_detection_utils.utils import (
-    is_main_process,
-    setup_for_distributed,
-)
-
 if version.parse(torchvision.__version__) < version.parse("0.7"):
     from torchvision.ops import _new_empty_tensor
     from torchvision.ops.misc import _output_size
-
-
-def get_sha():
-    cwd = os.path.dirname(os.path.abspath(__file__))
-
-    def _run(command):
-        return subprocess.check_output(command, cwd=cwd).decode("ascii").strip()
-
-    sha = "N/A"
-    diff = "clean"
-    branch = "N/A"
-    try:
-        sha = _run(["git", "rev-parse", "HEAD"])
-        subprocess.check_output(["git", "diff"], cwd=cwd)
-        diff = _run(["git", "diff-index", "HEAD"])
-        diff = "has uncommited changes" if diff else "clean"
-        branch = _run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-    except Exception:
-        pass
-    message = f"sha: {sha}, status: {diff}, branch: {branch}"
-    return message
 
 
 def collate_fn(batch):
@@ -146,42 +117,6 @@ def _onnx_nested_tensor_from_tensor_list(
     mask = torch.stack(padded_masks)
 
     return NestedTensor(tensor, mask=mask)
-
-
-def save_on_master(*args, **kwargs):
-    if is_main_process():
-        torch.save(*args, **kwargs)
-
-
-def init_distributed_mode(args):
-    if "RANK" in os.environ and "WORLD_SIZE" in os.environ:
-        args.rank = int(os.environ["RANK"])
-        args.world_size = int(os.environ["WORLD_SIZE"])
-        args.gpu = int(os.environ["LOCAL_RANK"])
-    elif "SLURM_PROCID" in os.environ:
-        args.rank = int(os.environ["SLURM_PROCID"])
-        args.gpu = args.rank % torch.cuda.device_count()
-    else:
-        print("Not using distributed mode")
-        args.distributed = False
-        return
-
-    args.distributed = True
-
-    torch.cuda.set_device(args.gpu)
-    args.dist_backend = "nccl"
-    print(
-        "| distributed init (rank {}): {}".format(args.rank, args.dist_url),
-        flush=True,
-    )
-    torch.distributed.init_process_group(
-        backend=args.dist_backend,
-        init_method=args.dist_url,
-        world_size=args.world_size,
-        rank=args.rank,
-    )
-    torch.distributed.barrier()
-    setup_for_distributed(args.rank == 0)
 
 
 @torch.no_grad()

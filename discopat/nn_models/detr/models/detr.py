@@ -5,25 +5,16 @@ import torch
 import torch.nn.functional as F  # noqa: N812
 from torch import nn
 
-from discopat.nn_models.detr.models.backbone import build_backbone
-from discopat.nn_models.detr.models.matcher import HungarianMatcher
-from discopat.nn_models.detr.models.segmentation import (
-    DETRsegm,
-    PostProcessPanoptic,
-    PostProcessSegm,
-    dice_loss,
-    sigmoid_focal_loss,
-)
-from discopat.nn_models.detr.models.transformer import build_transformer
 from discopat.nn_models.detr.util import box_ops
 from discopat.nn_models.detr.util.misc import (
     NestedTensor,
     accuracy,
-    interpolate,
-    is_dist_avail_and_initialized,
     nested_tensor_from_tensor_list,
 )
-from discopat.nn_training.torch_detection_utils import get_world_size
+from discopat.nn_training.torch_detection_utils.utils import (
+    get_world_size,
+    is_dist_avail_and_initialized,
+)
 
 
 class DETR(nn.Module):
@@ -215,41 +206,6 @@ class SetCriterion(nn.Module):
         losses["loss_giou"] = loss_giou.sum() / num_boxes
         return losses
 
-    def loss_masks(self, outputs, targets, indices, num_boxes):
-        """Compute the losses related to the masks: the focal loss and the dice loss.
-
-        targets dicts must contain the key "masks" containing a tensor of dim [nb_target_boxes, h, w]
-
-        """
-        assert "pred_masks" in outputs
-
-        src_idx = self._get_src_permutation_idx(indices)
-        tgt_idx = self._get_tgt_permutation_idx(indices)
-        src_masks = outputs["pred_masks"]
-        src_masks = src_masks[src_idx]
-        masks = [t["masks"] for t in targets]
-        # TODO use valid to mask invalid areas due to padding in loss
-        target_masks, valid = nested_tensor_from_tensor_list(masks).decompose()
-        target_masks = target_masks.to(src_masks)
-        target_masks = target_masks[tgt_idx]
-
-        # upsample predictions to the target size
-        src_masks = interpolate(
-            src_masks[:, None],
-            size=target_masks.shape[-2:],
-            mode="bilinear",
-            align_corners=False,
-        )
-        src_masks = src_masks[:, 0].flatten(1)
-
-        target_masks = target_masks.flatten(1)
-        target_masks = target_masks.view(src_masks.shape)
-        losses = {
-            "loss_mask": sigmoid_focal_loss(src_masks, target_masks, num_boxes),
-            "loss_dice": dice_loss(src_masks, target_masks, num_boxes),
-        }
-        return losses
-
     def _get_src_permutation_idx(self, indices):
         # permute predictions following indices
         batch_idx = torch.cat(
@@ -271,7 +227,6 @@ class SetCriterion(nn.Module):
             "labels": self.loss_labels,
             "cardinality": self.loss_cardinality,
             "boxes": self.loss_boxes,
-            "masks": self.loss_masks,
         }
         assert loss in loss_map, f"do you really want to compute {loss} loss?"
         return loss_map[loss](outputs, targets, indices, num_boxes, **kwargs)
@@ -316,9 +271,6 @@ class SetCriterion(nn.Module):
             for i, aux_outputs in enumerate(outputs["aux_outputs"]):
                 indices = self.matcher(aux_outputs, targets)
                 for loss in self.losses:
-                    if loss == "masks":
-                        # Intermediate masks losses are too costly to compute, we ignore them.
-                        continue
                     kwargs = {}
                     if loss == "labels":
                         # Logging is enabled only for the last layer
@@ -384,101 +336,3 @@ class MLP(nn.Module):
         for i, layer in enumerate(self.layers):
             x = F.relu(layer(x)) if i < self.num_layers - 1 else layer(x)
         return x
-
-
-def build_model(
-    dataset_file,
-    device,
-    num_queries,
-    aux_loss,
-    masks,
-    frozen_weights,
-    bbox_loss_coef,
-    giou_loss_coef,
-    mask_loss_coef,
-    dice_loss_coef,
-    dec_layers,
-    eos_coef,
-    hidden_dim,
-    position_embedding,
-    lr_backbone,
-    backbone,
-    dilation,
-    dropout,
-    nheads,
-    dim_feedforward,
-    enc_layers,
-    pre_norm,
-    set_cost_class,
-    set_cost_bbox,
-    set_cost_giou,
-):
-    num_classes = 20 if dataset_file != "coco" else 91
-    if dataset_file == "coco_panoptic":
-        num_classes = 250
-    device = torch.device(device)
-
-    backbone = build_backbone(
-        hidden_dim, position_embedding, lr_backbone, masks, backbone, dilation
-    )
-
-    transformer = build_transformer(
-        hidden_dim,
-        dropout,
-        nheads,
-        dim_feedforward,
-        enc_layers,
-        dec_layers,
-        pre_norm,
-    )
-
-    model = DETR(
-        backbone,
-        transformer,
-        num_classes=num_classes,
-        num_queries=num_queries,
-        aux_loss=aux_loss,
-    )
-    if masks:
-        model = DETRsegm(model, freeze_detr=(frozen_weights is not None))
-
-    matcher = HungarianMatcher(
-        cost_class=set_cost_class,
-        cost_bbox=set_cost_bbox,
-        cost_giou=set_cost_giou,
-    )
-
-    weight_dict = {"loss_ce": 1, "loss_bbox": bbox_loss_coef}
-    weight_dict["loss_giou"] = giou_loss_coef
-    if masks:
-        weight_dict["loss_mask"] = mask_loss_coef
-        weight_dict["loss_dice"] = dice_loss_coef
-    if aux_loss:
-        aux_weight_dict = {}
-        for i in range(dec_layers - 1):
-            aux_weight_dict.update(
-                {k + f"_{i}": v for k, v in weight_dict.items()}
-            )
-        weight_dict.update(aux_weight_dict)
-
-    losses = ["labels", "boxes", "cardinality"]
-    if masks:
-        losses += ["masks"]
-    criterion = SetCriterion(
-        num_classes,
-        matcher=matcher,
-        weight_dict=weight_dict,
-        eos_coef=eos_coef,
-        losses=losses,
-    )
-    criterion.to(device)
-    postprocessors = {"bbox": PostProcess()}
-    if masks:
-        postprocessors["segm"] = PostProcessSegm()
-        if dataset_file == "coco_panoptic":
-            is_thing_map = {i: i <= 90 for i in range(201)}
-            postprocessors["panoptic"] = PostProcessPanoptic(
-                is_thing_map, threshold=0.85
-            )
-
-    return model, criterion, postprocessors
