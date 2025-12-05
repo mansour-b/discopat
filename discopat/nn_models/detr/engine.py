@@ -9,7 +9,10 @@ import torch
 
 import discopat.nn_models.detr.util.misc as utils
 from discopat.nn_training.torch_detection_utils.coco_eval import CocoEvaluator
-from discopat.nn_training.torch_detection_utils.utils import reduce_dict
+from discopat.nn_training.torch_detection_utils.utils import (
+    MetricLogger,
+    reduce_dict,
+)
 
 
 def train_one_epoch(
@@ -23,7 +26,7 @@ def train_one_epoch(
 ):
     model.train()
     criterion.train()
-    metric_logger = utils.MetricLogger(delimiter="  ")
+    metric_logger = MetricLogger(delimiter="  ")
     metric_logger.add_meter(
         "lr", utils.SmoothedValue(window_size=1, fmt="{value:.6f}")
     )
@@ -93,7 +96,7 @@ def evaluate(
     model.eval()
     criterion.eval()
 
-    metric_logger = utils.MetricLogger(delimiter="  ")
+    metric_logger = MetricLogger(delimiter="  ")
     metric_logger.add_meter(
         "class_error", utils.SmoothedValue(window_size=1, fmt="{value:.2f}")
     )
