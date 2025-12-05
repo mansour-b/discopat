@@ -136,26 +136,3 @@ def accuracy(output, target, topk=(1,)):
         correct_k = correct[:k].view(-1).float().sum(0)
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
-
-
-def interpolate(
-    input, size=None, scale_factor=None, mode="nearest", align_corners=None
-):
-    """Equivalent to nn.functional.interpolate, but with support for empty batch sizes.
-
-    This will eventually be supported natively by PyTorch, and this
-    class can go away.
-    """
-    if version.parse(torchvision.__version__) < version.parse("0.7"):
-        if input.numel() > 0:
-            return torch.nn.functional.interpolate(
-                input, size, scale_factor, mode, align_corners
-            )
-
-        output_shape = _output_size(2, input, size, scale_factor)
-        output_shape = list(input.shape[:-2]) + list(output_shape)
-        return _new_empty_tensor(input, output_shape)
-    else:
-        return torchvision.ops.misc.interpolate(
-            input, size, scale_factor, mode, align_corners
-        )
