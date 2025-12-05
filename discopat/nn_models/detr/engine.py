@@ -1,18 +1,14 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
-"""
-Train and eval functions used in main.py
-"""
+"""Train and eval functions used in main.py."""
 
 import math
-import os
 import sys
 from collections.abc import Iterable
 
 import torch
 
 import discopat.nn_models.detr.util.misc as utils
-from discopat.nn_models.detr.datasets.coco_eval import CocoEvaluator
-from discopat.nn_models.detr.datasets.panoptic_eval import PanopticEvaluator
+from discopat.nn_training.torch_detection_utils.coco_eval import CocoEvaluator
 
 
 def train_one_epoch(
@@ -106,14 +102,6 @@ def evaluate(
     coco_evaluator = CocoEvaluator(base_ds, iou_types)
     # coco_evaluator.coco_eval[iou_types[0]].params.iouThrs = [0, 0.1, 0.5, 0.75]
 
-    panoptic_evaluator = None
-    if "panoptic" in postprocessors.keys():
-        panoptic_evaluator = PanopticEvaluator(
-            data_loader.dataset.ann_file,
-            data_loader.dataset.ann_folder,
-            output_dir=os.path.join(output_dir, "panoptic_eval"),
-        )
-
     for samples, targets in metric_logger.log_every(data_loader, 10, header):
         samples = samples.to(device)
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
@@ -155,33 +143,17 @@ def evaluate(
         if coco_evaluator is not None:
             coco_evaluator.update(res)
 
-        if panoptic_evaluator is not None:
-            res_pano = postprocessors["panoptic"](
-                outputs, target_sizes, orig_target_sizes
-            )
-            for i, target in enumerate(targets):
-                image_id = target["image_id"].item()
-                file_name = f"{image_id:012d}.png"
-                res_pano[i]["image_id"] = image_id
-                res_pano[i]["file_name"] = file_name
-
-            panoptic_evaluator.update(res_pano)
-
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
     if coco_evaluator is not None:
         coco_evaluator.synchronize_between_processes()
-    if panoptic_evaluator is not None:
-        panoptic_evaluator.synchronize_between_processes()
 
     # accumulate predictions from all images
     if coco_evaluator is not None:
         coco_evaluator.accumulate()
         coco_evaluator.summarize()
     panoptic_res = None
-    if panoptic_evaluator is not None:
-        panoptic_res = panoptic_evaluator.summarize()
     stats = {k: meter.global_avg for k, meter in metric_logger.meters.items()}
     if coco_evaluator is not None:
         if "bbox" in postprocessors.keys():
