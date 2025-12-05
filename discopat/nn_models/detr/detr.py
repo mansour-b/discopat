@@ -6,10 +6,12 @@ import torch.nn.functional as F  # noqa: N812
 from torch import nn
 
 from discopat.nn_models.detr import box_ops
-from discopat.nn_models.detr.util.misc import (
+from discopat.nn_models.detr.nested_tensor import (
     NestedTensor,
-    accuracy,
     nested_tensor_from_tensor_list,
+)
+from discopat.nn_models.detr.util.misc import (
+    accuracy,
 )
 from discopat.nn_training.torch_detection_utils.utils import (
     get_world_size,

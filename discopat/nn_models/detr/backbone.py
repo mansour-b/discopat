@@ -7,7 +7,7 @@ import torchvision
 from torch import nn
 from torchvision.models._utils import IntermediateLayerGetter
 
-from discopat.nn_models.detr.util.misc import NestedTensor
+from discopat.nn_models.detr.nested_tensor import NestedTensor
 from discopat.nn_training.torch_detection_utils.utils import is_main_process
 
 
