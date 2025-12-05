@@ -1,9 +1,10 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
-"""
-Misc functions, including distributed helpers.
+"""Misc functions, including distributed helpers.
 
 Mostly copy-paste from torchvision references.
 """
+
+from __future__ import annotations
 
 import datetime
 import os
@@ -11,7 +12,6 @@ import pickle
 import subprocess
 import time
 from collections import defaultdict, deque
-from typing import List, Optional
 
 import torch
 import torch.distributed as dist
@@ -92,12 +92,14 @@ class SmoothedValue(object):
 
 
 def all_gather(data):
-    """
-    Run all_gather on arbitrary picklable data (not necessarily tensors)
+    """Run all_gather on arbitrary picklable data (not necessarily tensors).
+
     Args:
         data: any picklable object
+
     Returns:
         list[data]: list of data gathered from each rank
+
     """
     world_size = get_world_size()
     if world_size == 1:
@@ -303,7 +305,6 @@ def collate_fn(batch):
 
 
 def _max_by_axis(the_list):
-    # type: (List[List[int]]) -> List[int]
     maxes = the_list[0]
     for sublist in the_list[1:]:
         for index, item in enumerate(sublist):
@@ -312,7 +313,7 @@ def _max_by_axis(the_list):
 
 
 class NestedTensor(object):
-    def __init__(self, tensors, mask: Optional[Tensor]):
+    def __init__(self, tensors, mask: Tensor | None):
         self.tensors = tensors
         self.mask = mask
 
@@ -334,7 +335,7 @@ class NestedTensor(object):
         return str(self.tensors)
 
 
-def nested_tensor_from_tensor_list(tensor_list: List[Tensor]):
+def nested_tensor_from_tensor_list(tensor_list: list[Tensor]):
     # TODO make this more general
     if tensor_list[0].ndim == 3:
         if torchvision._is_tracing():
@@ -363,7 +364,7 @@ def nested_tensor_from_tensor_list(tensor_list: List[Tensor]):
 # nested_tensor_from_tensor_list() that is supported by ONNX tracing.
 @torch.jit.unused
 def _onnx_nested_tensor_from_tensor_list(
-    tensor_list: List[Tensor],
+    tensor_list: list[Tensor],
 ) -> NestedTensor:
     max_size = []
     for i in range(tensor_list[0].dim()):
@@ -496,9 +497,8 @@ def accuracy(output, target, topk=(1,)):
 def interpolate(
     input, size=None, scale_factor=None, mode="nearest", align_corners=None
 ):
-    # type: (Tensor, Optional[List[int]], Optional[float], str, Optional[bool]) -> Tensor
-    """
-    Equivalent to nn.functional.interpolate, but with support for empty batch sizes.
+    """Equivalent to nn.functional.interpolate, but with support for empty batch sizes.
+
     This will eventually be supported natively by PyTorch, and this
     class can go away.
     """
