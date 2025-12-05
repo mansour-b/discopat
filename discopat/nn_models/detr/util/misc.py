@@ -6,12 +6,9 @@ Mostly copy-paste from torchvision references.
 
 from __future__ import annotations
 
-import datetime
 import os
 import pickle
 import subprocess
-import time
-from collections import defaultdict, deque
 
 import torch
 import torch.distributed as dist
@@ -24,8 +21,6 @@ from torch import Tensor
 if version.parse(torchvision.__version__) < version.parse("0.7"):
     from torchvision.ops import _new_empty_tensor
     from torchvision.ops.misc import _output_size
-
-from discopat.nn_training.torch_detection_utils.utils import SmoothedValue
 
 
 def all_gather(data):

@@ -7,10 +7,10 @@ from collections.abc import Iterable
 
 import torch
 
-import discopat.nn_models.detr.util.misc as utils
 from discopat.nn_training.torch_detection_utils.coco_eval import CocoEvaluator
 from discopat.nn_training.torch_detection_utils.utils import (
     MetricLogger,
+    SmoothedValue,
     reduce_dict,
 )
 
@@ -28,10 +28,10 @@ def train_one_epoch(
     criterion.train()
     metric_logger = MetricLogger(delimiter="  ")
     metric_logger.add_meter(
-        "lr", utils.SmoothedValue(window_size=1, fmt="{value:.6f}")
+        "lr", SmoothedValue(window_size=1, fmt="{value:.6f}")
     )
     metric_logger.add_meter(
-        "class_error", utils.SmoothedValue(window_size=1, fmt="{value:.2f}")
+        "class_error", SmoothedValue(window_size=1, fmt="{value:.2f}")
     )
     header = "Epoch: [{}]".format(epoch)
     print_freq = 10
@@ -98,7 +98,7 @@ def evaluate(
 
     metric_logger = MetricLogger(delimiter="  ")
     metric_logger.add_meter(
-        "class_error", utils.SmoothedValue(window_size=1, fmt="{value:.2f}")
+        "class_error", SmoothedValue(window_size=1, fmt="{value:.2f}")
     )
     header = "Test:"
 
