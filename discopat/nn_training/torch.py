@@ -124,7 +124,7 @@ class DetrTrainer(NNTrainer):
                 max_norm=0,
             )
             self.lr_scheduler.step()
-            evaluation_dict = evaluate_detr(
+            evaluate_detr(
                 self.net,
                 self.criterion,
                 self.postprocessors,
@@ -133,14 +133,6 @@ class DetrTrainer(NNTrainer):
                 device=self.device,
                 output_dir=DISCOPATH / "detr_outputs",
             )
-            print()
-            print("===")
-            print(f"Evaluation after epoch {epoch}:")
-            print()
-            for k, v in evaluation_dict.items():
-                print(f"{k:<10}: {v:.3f}")
-            print("===")
-            print()
             for callback in self.callbacks:
                 callback(self.net, self.device)
 
