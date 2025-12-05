@@ -9,6 +9,7 @@ import torch
 
 import discopat.nn_models.detr.util.misc as utils
 from discopat.nn_training.torch_detection_utils.coco_eval import CocoEvaluator
+from discopat.nn_training.torch_detection_utils.utils import reduce_dict
 
 
 def train_one_epoch(
@@ -48,7 +49,7 @@ def train_one_epoch(
         )
 
         # reduce losses over all GPUs for logging purposes
-        loss_dict_reduced = utils.reduce_dict(loss_dict)
+        loss_dict_reduced = reduce_dict(loss_dict)
         loss_dict_reduced_unscaled = {
             f"{k}_unscaled": v for k, v in loss_dict_reduced.items()
         }
@@ -111,7 +112,7 @@ def evaluate(
         weight_dict = criterion.weight_dict
 
         # reduce losses over all GPUs for logging purposes
-        loss_dict_reduced = utils.reduce_dict(loss_dict)
+        loss_dict_reduced = reduce_dict(loss_dict)
         loss_dict_reduced_scaled = {
             k: v * weight_dict[k]
             for k, v in loss_dict_reduced.items()
