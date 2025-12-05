@@ -306,13 +306,9 @@ class SetCriterion(nn.Module):
 
         # Compute all the requested losses
         losses = {}
-        fake_outputs = {
-            "pred_logits": outputs["pred_logits"][:, :, :2],
-            "pred_boxes": outputs["pred_boxes"],
-        }
         for loss in self.losses:
             losses.update(
-                self.get_loss(loss, fake_outputs, targets, indices, num_boxes)
+                self.get_loss(loss, outputs, targets, indices, num_boxes)
             )
 
         # In case of auxiliary losses, we repeat this process with the output of each intermediate layer.
