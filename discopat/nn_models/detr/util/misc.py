@@ -7,16 +7,19 @@ Mostly copy-paste from torchvision references.
 from __future__ import annotations
 
 import os
-import pickle
 import subprocess
 
 import torch
-import torch.distributed as dist
 
 # needed due to empty tensor bug in pytorch and torchvision 0.5
 import torchvision
 from packaging import version
 from torch import Tensor
+
+from discopat.nn_training.torch_detection_utils.utils import (
+    is_main_process,
+    setup_for_distributed,
+)
 
 if version.parse(torchvision.__version__) < version.parse("0.7"):
     from torchvision.ops import _new_empty_tensor
@@ -143,46 +146,6 @@ def _onnx_nested_tensor_from_tensor_list(
     mask = torch.stack(padded_masks)
 
     return NestedTensor(tensor, mask=mask)
-
-
-def setup_for_distributed(is_master):
-    """
-    This function disables printing when not in master process
-    """
-    import builtins as __builtin__
-
-    builtin_print = __builtin__.print
-
-    def print(*args, **kwargs):
-        force = kwargs.pop("force", False)
-        if is_master or force:
-            builtin_print(*args, **kwargs)
-
-    __builtin__.print = print
-
-
-def is_dist_avail_and_initialized():
-    if not dist.is_available():
-        return False
-    if not dist.is_initialized():
-        return False
-    return True
-
-
-def get_world_size():
-    if not is_dist_avail_and_initialized():
-        return 1
-    return dist.get_world_size()
-
-
-def get_rank():
-    if not is_dist_avail_and_initialized():
-        return 0
-    return dist.get_rank()
-
-
-def is_main_process():
-    return get_rank() == 0
 
 
 def save_on_master(*args, **kwargs):

@@ -19,11 +19,11 @@ from discopat.nn_models.detr.util import box_ops
 from discopat.nn_models.detr.util.misc import (
     NestedTensor,
     accuracy,
-    get_world_size,
     interpolate,
     is_dist_avail_and_initialized,
     nested_tensor_from_tensor_list,
 )
+from discopat.nn_training.torch_detection_utils import get_world_size
 
 
 class DETR(nn.Module):
