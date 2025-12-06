@@ -77,3 +77,23 @@ class TestMovie:
             "tracks": [],
         }
         assert Movie.from_dict(movie_as_dict) == self.make_movie()
+
+    def test_to_coco(self):
+        movie = self.make_movie()
+        expected = {
+            "annotations": [
+                {
+                    "area": 1.0,
+                    "bbox": [0.0, 0.0, 1.0, 1.0],
+                    "category_id": 1,
+                    "id": 1,
+                    "image_id": 1,
+                    "iscrowd": 0,
+                },
+            ],
+            "categories": [{"id": 1, "name": "blob"}],
+            "images": [
+                {"file_name": "0.png", "height": 512, "id": 1, "width": 512}
+            ],
+        }
+        assert movie.to_coco() == expected
