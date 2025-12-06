@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F  # noqa: N812
 from torch import nn
 
-from discopat.nn_models.detr import box_ops
+from discopat.nn_models.torch_box_ops import box_cxcywh_to_xyxy
 
 
 class PostProcess(nn.Module):
@@ -29,7 +29,7 @@ class PostProcess(nn.Module):
         scores, labels = prob[..., :-1].max(-1)
 
         # convert to [x0, y0, x1, y1] format
-        boxes = box_ops.box_cxcywh_to_xyxy(out_bbox)
+        boxes = box_cxcywh_to_xyxy(out_bbox)
         # and from relative [0, 1] to absolute [0, height] coordinates
         img_h, img_w = target_sizes.unbind(1)
         scale_fct = torch.stack([img_w, img_h, img_w, img_h], dim=1)

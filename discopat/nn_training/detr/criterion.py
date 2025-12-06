@@ -5,7 +5,10 @@ import torch
 import torch.nn.functional as F  # noqa: N812
 from torch import nn
 
-from discopat.nn_models.detr import box_ops
+from discopat.nn_models.torch_box_ops import (
+    box_cxcywh_to_xyxy,
+    generalized_box_iou,
+)
 from discopat.nn_training.torch_detection_utils.utils import (
     get_world_size,
     is_dist_avail_and_initialized,
@@ -131,9 +134,9 @@ class SetCriterion(nn.Module):
         losses["loss_bbox"] = loss_bbox.sum() / num_boxes
 
         loss_giou = 1 - torch.diag(
-            box_ops.generalized_box_iou(
-                box_ops.box_cxcywh_to_xyxy(src_boxes),
-                box_ops.box_cxcywh_to_xyxy(target_boxes),
+            generalized_box_iou(
+                box_cxcywh_to_xyxy(src_boxes),
+                box_cxcywh_to_xyxy(target_boxes),
             )
         )
         losses["loss_giou"] = loss_giou.sum() / num_boxes
