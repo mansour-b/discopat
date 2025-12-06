@@ -2,14 +2,6 @@ from __future__ import annotations
 
 import torch
 
-from discopat.nn_models.detr.nested_tensor import nested_tensor_from_tensor_list
-
-
-def collate_fn(batch):
-    batch = list(zip(*batch))
-    batch[0] = nested_tensor_from_tensor_list(batch[0])
-    return tuple(batch)
-
 
 @torch.no_grad()
 def accuracy(output, target, topk=(1,)):
