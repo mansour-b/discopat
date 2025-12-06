@@ -1,4 +1,6 @@
-from discopat.nn_models.detr.nested_tensor import nested_tensor_from_tensor_list
+from discopat.nn_training.detr.nested_tensor import (
+    nested_tensor_from_tensor_list,
+)
 
 
 def collate_fn(batch):
