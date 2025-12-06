@@ -1,4 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 """Compute the matching cost and solve the corresponding LSAP."""
 
 import torch
