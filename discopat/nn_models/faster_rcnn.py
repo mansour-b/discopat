@@ -141,7 +141,3 @@ class TorchNetBuilder:
 
     def _load_weights(self, net: NeuralNet, weights: dict) -> None:
         net.load_state_dict(weights)
-        net.load_state_dict(weights)
-        net.load_state_dict(weights)
-        net.load_state_dict(weights)
-        net.load_state_dict(weights)
