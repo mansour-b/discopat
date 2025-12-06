@@ -2,7 +2,20 @@ import torch
 import torch.nn.functional as F  # noqa: N812
 from torch import nn
 
+from discopat.core import Box, ComputingDevice, Frame, NNModel
 from discopat.nn_models.torch_box_ops import box_cxcywh_to_xyxy
+
+
+class DETRModel(NNModel):
+    _device: ComputingDevice
+
+    def pre_process(self, frame: Frame) -> torch.Tensor:
+        pass
+
+    def post_process(
+        self, raw_predictions: list[dict[torch.Tensor]]
+    ) -> list[Box]:
+        pass
 
 
 class PostProcess(nn.Module):

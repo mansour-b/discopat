@@ -3,7 +3,7 @@ from typing import Any
 import torch
 
 from discopat.core import ComputingDevice, Dataset, NeuralNet
-from discopat.nn_models.detr.post_process import PostProcess
+from discopat.nn_models.detr import PostProcess
 from discopat.nn_training.detr.criterion import SetCriterion
 from discopat.nn_training.detr.engine import evaluate, train_one_epoch
 from discopat.nn_training.detr.matcher import HungarianMatcher
