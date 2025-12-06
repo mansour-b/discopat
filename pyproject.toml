@@ -40,6 +40,7 @@ dependencies = [
   "osfclient",
   "pycocotools",
   "PyYAML",
+  "rich",
   "scikit-image",
   "torch",
   "torchaudio",
@@ -60,6 +61,9 @@ test = [
   "pytest",
   "pytest-cov",
 ]
+
+[project.scripts]
+disco = "discopat.disco:main"
 
 [project.urls]
 Repository = "https://github.com/mansour-b/discopat"
@@ -116,6 +120,7 @@ ignore = [
   "D105",
   "E501",
   "EM101",
+  "FBT",
   "TRY003",
 ]
 

@@ -10,6 +10,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 from typing_extensions import Self
 
+from discopat.basics import gs_to_rgb, to_01
 from discopat.core import Box, ComputingDevice, Frame, NeuralNet, NNModel
 
 
@@ -29,11 +30,9 @@ class FasterRCNNModel(NNModel):
         self._device = "cpu"
 
     def pre_process(self, frame: Frame) -> torch.Tensor:
-        input_array = np.expand_dims(frame.image_array, axis=0)
-        input_array = np.repeat(input_array, repeats=3, axis=0)
-
+        input_array = gs_to_rgb(frame.image_array, "channels_first")
+        input_array = to_01(input_array)
         input_array = np.expand_dims(input_array, axis=0)
-
         input_array = torch.as_tensor(input_array)
         return input_array.to(torch.float32).to(self._concrete_device)
 
@@ -141,8 +140,4 @@ class TorchNetBuilder:
         return net
 
     def _load_weights(self, net: NeuralNet, weights: dict) -> None:
-        net.load_state_dict(weights)
-        net.load_state_dict(weights)
-        net.load_state_dict(weights)
-        net.load_state_dict(weights)
         net.load_state_dict(weights)

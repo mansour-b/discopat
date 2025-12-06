@@ -9,9 +9,7 @@ import torch.distributed as dist
 
 
 class SmoothedValue:
-    """Track a series of values and provide access to smoothed values over a
-    window or the global series average.
-    """
+    """Track a series of values and provide access to smoothed values over a window or the global series average."""
 
     def __init__(self, window_size=20, fmt=None):
         if fmt is None:
@@ -27,12 +25,12 @@ class SmoothedValue:
         self.total += value * n
 
     def synchronize_between_processes(self):
-        """
-        Warning: does not synchronize the deque!
-        """
+        """Warning: does not synchronize the deque!."""
         if not is_dist_avail_and_initialized():
             return
-        t = torch.tensor([self.count, self.total], dtype=torch.float64, device="cuda")
+        t = torch.tensor(
+            [self.count, self.total], dtype=torch.float64, device="cuda"
+        )
         dist.barrier()
         dist.all_reduce(t)
         t = t.tolist()
@@ -63,17 +61,23 @@ class SmoothedValue:
 
     def __str__(self):
         return self.fmt.format(
-            median=self.median, avg=self.avg, global_avg=self.global_avg, max=self.max, value=self.value
+            median=self.median,
+            avg=self.avg,
+            global_avg=self.global_avg,
+            max=self.max,
+            value=self.value,
         )
 
 
 def all_gather(data):
-    """
-    Run all_gather on arbitrary picklable data (not necessarily tensors)
+    """Run all_gather on arbitrary picklable data (not necessarily tensors).
+
     Args:
         data: any picklable object
+
     Returns:
         list[data]: list of data gathered from each rank
+
     """
     world_size = get_world_size()
     if world_size == 1:
@@ -84,13 +88,14 @@ def all_gather(data):
 
 
 def reduce_dict(input_dict, average=True):
-    """
+    """Reduce the values in the dictionary from all processes so that all processes.
+
     Args:
         input_dict (dict): all the values will be reduced
-        average (bool): whether to do average or sum
-    Reduce the values in the dictionary from all processes so that all processes
-    have the averaged results. Returns a dict with the same fields as
-    input_dict, after reduction.
+        average (bool): whether to do average or sum have the averaged results.
+
+    Returns a dict with the same fields as input_dict, after reduction.
+
     """
     world_size = get_world_size()
     if world_size < 2:
@@ -106,8 +111,7 @@ def reduce_dict(input_dict, average=True):
         dist.all_reduce(values)
         if average:
             values /= world_size
-        reduced_dict = {k: v for k, v in zip(names, values)}
-    return reduced_dict
+        return {k: v for k, v in zip(names, values)}
 
 
 class MetricLogger:
@@ -127,7 +131,9 @@ class MetricLogger:
             return self.meters[attr]
         if attr in self.__dict__:
             return self.__dict__[attr]
-        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attr}'")
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{attr}'"
+        )
 
     def __str__(self):
         loss_str = []
@@ -165,7 +171,14 @@ class MetricLogger:
             )
         else:
             log_msg = self.delimiter.join(
-                [header, "[{0" + space_fmt + "}/{1}]", "eta: {eta}", "{meters}", "time: {time}", "data: {data}"]
+                [
+                    header,
+                    "[{0" + space_fmt + "}/{1}]",
+                    "eta: {eta}",
+                    "{meters}",
+                    "time: {time}",
+                    "data: {data}",
+                ]
             )
         MB = 1024.0 * 1024.0
         for obj in iterable:
@@ -190,14 +203,21 @@ class MetricLogger:
                 else:
                     print(
                         log_msg.format(
-                            i, len(iterable), eta=eta_string, meters=str(self), time=str(iter_time), data=str(data_time)
+                            i,
+                            len(iterable),
+                            eta=eta_string,
+                            meters=str(self),
+                            time=str(iter_time),
+                            data=str(data_time),
                         )
                     )
             i += 1
             end = time.time()
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-        print(f"{header} Total time: {total_time_str} ({total_time / len(iterable):.4f} s / it)")
+        print(
+            f"{header} Total time: {total_time_str} ({total_time / len(iterable):.4f} s / it)"
+        )
 
 
 def collate_fn(batch):
@@ -213,9 +233,7 @@ def mkdir(path):
 
 
 def setup_for_distributed(is_master):
-    """
-    This function disables printing when not in master process
-    """
+    """Disable printing when not in master process."""
     import builtins as __builtin__
 
     builtin_print = __builtin__.print
@@ -231,9 +249,7 @@ def setup_for_distributed(is_master):
 def is_dist_avail_and_initialized():
     if not dist.is_available():
         return False
-    if not dist.is_initialized():
-        return False
-    return True
+    return dist.is_initialized()
 
 
 def get_world_size():
@@ -250,33 +266,3 @@ def get_rank():
 
 def is_main_process():
     return get_rank() == 0
-
-
-def save_on_master(*args, **kwargs):
-    if is_main_process():
-        torch.save(*args, **kwargs)
-
-
-def init_distributed_mode(args):
-    if "RANK" in os.environ and "WORLD_SIZE" in os.environ:
-        args.rank = int(os.environ["RANK"])
-        args.world_size = int(os.environ["WORLD_SIZE"])
-        args.gpu = int(os.environ["LOCAL_RANK"])
-    elif "SLURM_PROCID" in os.environ:
-        args.rank = int(os.environ["SLURM_PROCID"])
-        args.gpu = args.rank % torch.cuda.device_count()
-    else:
-        print("Not using distributed mode")
-        args.distributed = False
-        return
-
-    args.distributed = True
-
-    torch.cuda.set_device(args.gpu)
-    args.dist_backend = "nccl"
-    print(f"| distributed init (rank {args.rank}): {args.dist_url}", flush=True)
-    torch.distributed.init_process_group(
-        backend=args.dist_backend, init_method=args.dist_url, world_size=args.world_size, rank=args.rank
-    )
-    torch.distributed.barrier()
-    setup_for_distributed(args.rank == 0)
