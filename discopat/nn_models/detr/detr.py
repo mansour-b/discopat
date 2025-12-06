@@ -6,13 +6,29 @@ import torch.nn.functional as F  # noqa: N812
 from torch import nn
 
 from discopat.nn_models.detr import box_ops
-from discopat.nn_models.detr.util.misc import (
-    accuracy,
-)
 from discopat.nn_training.torch_detection_utils.utils import (
     get_world_size,
     is_dist_avail_and_initialized,
 )
+
+
+@torch.no_grad()
+def accuracy(output, target, topk=(1,)):
+    """Compute the precision@k for the specified values of k."""
+    if target.numel() == 0:
+        return [torch.zeros([], device=output.device)]
+    maxk = max(topk)
+    batch_size = target.size(0)
+
+    _, pred = output.topk(maxk, 1, True, True)
+    pred = pred.t()
+    correct = pred.eq(target.view(1, -1).expand_as(pred))
+
+    res = []
+    for k in topk:
+        correct_k = correct[:k].view(-1).float().sum(0)
+        res.append(correct_k.mul_(100.0 / batch_size))
+    return res
 
 
 class SetCriterion(nn.Module):
