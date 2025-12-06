@@ -7,10 +7,10 @@ def to_int(array: np.ndarray) -> np.ndarray:
     return ((array - vmin) / (vmax - vmin) * 255).astype(np.uint8)
 
 
-def to_01(array: np.ndarray) -> np.ndarray:
+def to_01(array: np.ndarray, eps: float = 1e-10) -> np.ndarray:
     vmin = array.min()
     vmax = array.max()
-    return (array - vmin) / (vmax - vmin)
+    return (array - vmin) / max((vmax - vmin), eps)
 
 
 def gs_to_rgb(
