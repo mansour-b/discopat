@@ -106,6 +106,25 @@ def evaluate(
 
     """
     model.eval()
+    # print(
+    #     "",
+    #     "",
+    #     "",
+    #     "",
+    #     "",
+    #     sep="\n",
+    # )
+    # for images, targets in data_loader:
+    #     for t in targets:
+    #         print(_get_image_id(t))
+    print(
+        "",
+        "",
+        "",
+        "",
+        "",
+        sep="\n",
+    )
     prediction_dict = {
         _get_image_id(t): pred
         for images, targets in data_loader
@@ -113,6 +132,44 @@ def evaluate(
             model([img.to(device).float() for img in images]), targets
         )
     }
+    p_dict = {}
+    for images, targets in data_loader:
+        print(
+            "",
+            "",
+            "",
+            "",
+            len(targets),
+            [_get_image_id(t) for t in targets],
+            sep="\n",
+        )
+        predictions = model([img.to(device).float() for img in images])
+        print(
+            "",
+            "",
+            "PREDICTIONS",
+            predictions.__class__,
+            predictions.keys(),
+            "",
+            "",
+            sep="\n",
+        )
+        for pred, t in zip(predictions, targets, strict=True):
+            print(_get_image_id(t))
+            p_dict[_get_image_id(t)] = pred
+    print(
+        "",
+        "",
+        "",
+        "PREDICTION DICT",
+        prediction_dict.keys(),
+        "P DICT",
+        p_dict.keys(),
+        "",
+        "",
+        "",
+        sep="\n",
+    )
     matching_dict = {
         _get_image_id(t): match_groundtruths_and_predictions(
             groundtruths=t["boxes"],
