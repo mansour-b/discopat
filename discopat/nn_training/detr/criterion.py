@@ -3,6 +3,7 @@
 import torch
 import torch.nn.functional as F  # noqa: N812
 from torch import nn
+from torchvision.transforms.v2 import ConvertBoundingBoxFormat
 
 from discopat.nn_models.torch_box_ops import (
     box_cxcywh_to_xyxy,
@@ -176,6 +177,7 @@ class SetCriterion(nn.Module):
                 The expected keys in each dict depends on the losses applied, see each loss' doc
 
         """
+        targets = self.convert_targets_to_detr_format(targets)
         outputs_without_aux = {
             k: v for k, v in outputs.items() if k != "aux_outputs"
         }
@@ -217,3 +219,14 @@ class SetCriterion(nn.Module):
                     losses.update(l_dict)
 
         return losses
+
+    def convert_targets_to_detr_format(self, targets):
+        new_targets = []
+        for t in targets:
+            h, w = t["orig_size"]
+            boxes = t["boxes"]  # xyxy pixels
+            cxcywh = ConvertBoundingBoxFormat("CXCYWH")(boxes)
+            cxcywh = cxcywh / torch.tensor([w, h, w, h], device=boxes.device)
+            new_targets.append({**t, "boxes": cxcywh})
+
+        return new_targets

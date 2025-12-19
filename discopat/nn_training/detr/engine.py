@@ -35,13 +35,11 @@ def train_one_epoch(
     header = "Epoch: [{}]".format(epoch)
     print_freq = 10
 
-    for samples, targets in metric_logger.log_every(
-        data_loader, print_freq, header
-    ):
-        samples = samples.to(device)
-        targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+    for imgs, tgts in metric_logger.log_every(data_loader, print_freq, header):
+        images = imgs.to(device)
+        targets = [{k: v.to(device) for k, v in t.items()} for t in tgts]
 
-        outputs = model(samples)
+        outputs = model(images)
         loss_dict = criterion(outputs, targets)
         weight_dict = criterion.weight_dict
         losses = sum(
