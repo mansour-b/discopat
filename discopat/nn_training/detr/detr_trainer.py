@@ -54,7 +54,7 @@ class DetrTrainer(NNTrainer):
 
     def train(self, num_epochs: int):
         for epoch in range(num_epochs):
-            train_one_epoch(
+            loss_dict = train_one_epoch(
                 self.net,
                 self.criterion,
                 self.dataset,
@@ -74,7 +74,7 @@ class DetrTrainer(NNTrainer):
                 output_dir=DISCOPATH / "detr_outputs",
             )
             for callback in self.callbacks:
-                callback(self.net, self.device)
+                callback(loss_dict)
 
     def set_default_optimiser(self) -> torch.optim.Optimizer:
         net_params = [p for p in self.net.parameters() if p.requires_grad]
