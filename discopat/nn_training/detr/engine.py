@@ -43,9 +43,7 @@ def train_one_epoch(
         loss_dict = criterion(outputs, targets)
         weight_dict = criterion.weight_dict
         losses = sum(
-            loss_dict[k] * weight_dict[k]
-            for k in loss_dict.keys()
-            if k in weight_dict
+            loss_dict[k] * weight_dict[k] for k in loss_dict if k in weight_dict
         )
 
         # reduce losses over all GPUs for logging purposes
