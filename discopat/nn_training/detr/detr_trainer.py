@@ -30,8 +30,7 @@ class DetrTrainer(NNTrainer):
         )
         matcher = HungarianMatcher(cost_class=1, cost_bbox=5, cost_giou=2)
 
-        weight_dict = {"loss_ce": 1, "loss_bbox": 5}
-        weight_dict["loss_giou"] = 2
+        weight_dict = {"loss_ce": 1, "loss_bbox": 5, "loss_giou": 2}
 
         dec_layers = 6
         aux_weight_dict = {}
