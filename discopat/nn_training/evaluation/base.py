@@ -113,6 +113,11 @@ def evaluate(
             model([img.to(device).float() for img in images]), targets
         )
     }
+    p_dict = {}
+    for images, targets in data_loader:
+        predictions = model([img.to(device).float() for img in images])
+        for pred, t in zip(predictions, targets, strict=True):
+            p_dict[_get_image_id(t)] = pred
     matching_dict = {
         _get_image_id(t): match_groundtruths_and_predictions(
             groundtruths=t["boxes"],
